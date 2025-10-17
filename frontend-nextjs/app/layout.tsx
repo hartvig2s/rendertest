@@ -13,6 +13,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="no">
+      <head>
+        <script async src="https://plausible.io/js/pa-MxTDdKzD7Qkgs86vlm7TL.js"></script>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+            plausible.init()
+          `
+        }} />
+      </head>
       <body>{children}</body>
     </html>
   )
