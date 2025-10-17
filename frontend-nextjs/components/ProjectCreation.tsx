@@ -52,11 +52,24 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
     e.preventDefault();
 
     if (validateForm()) {
-      onProjectCreated({
+      const project = {
         name: name.trim(),
         width: gridWidth,
         height: gridHeight,
-      });
+      };
+
+      // Track project creation event in Plausible
+      if (typeof window !== 'undefined' && (window as any).plausible) {
+        (window as any).plausible('Project Created', {
+          props: {
+            projectName: project.name,
+            gridSize: `${project.width}x${project.height}`,
+            totalCells: project.width * project.height
+          }
+        });
+      }
+
+      onProjectCreated(project);
     }
   };
 
