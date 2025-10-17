@@ -1,0 +1,34 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-size: 110%; /* Increased by 10% */
+}
+
+body {
+  font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Apply elegant serif font to all headings (Playfair Display as fallback with full Norwegian support) */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Recoleta', 'Playfair Display', Georgia, serif;
+}
+
+/* Apply Recoleta to all buttons */
+button, .btn {
+  font-family: 'Recoleta', 'Playfair Display', Georgia, serif !important;
+}
+
+#root {
+  height: 100vh;
+}

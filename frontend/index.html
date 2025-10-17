@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crochet Design Tool MVP</title>
+    <meta name="description" content="Create custom crochet tote bag patterns using filet crochet. Design with drag-and-drop motifs, generate patterns, and calculate yarn requirements.">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Streamlit component communication setup
+      window.streamlit = {
+        setComponentValue: function(value) {
+          window.parent.postMessage({
+            type: "streamlit:setComponentValue",
+            value: value
+          }, "*");
+        },
+        setFrameHeight: function(height) {
+          window.parent.postMessage({
+            type: "streamlit:setFrameHeight",
+            height: height
+          }, "*");
+        }
+      };
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
