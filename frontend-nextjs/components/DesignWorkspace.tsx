@@ -1139,6 +1139,18 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
+      // Track PDF export event in Plausible
+      if (typeof window !== 'undefined' && (window as any).plausible) {
+        (window as any).plausible('PDF Export', {
+          props: {
+            projectName: project.name,
+            gridSize: `${gridWidth}x${gridHeight}`,
+            motifsCount: placedMotifs.length + backSideMotifs.length,
+            edgePattern: edgePattern
+          }
+        });
+      }
+
       setAutoUpdating(false);
     } catch (error) {
       console.error('Error generating PDF:', error);
