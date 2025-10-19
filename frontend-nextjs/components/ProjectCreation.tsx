@@ -60,6 +60,7 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
 
       // Track project creation event in Plausible
       if (typeof window !== 'undefined' && (window as any).plausible) {
+        console.log('🎯 Plausible: Tracking Project Created event');
         (window as any).plausible('Project Created', {
           props: {
             projectName: project.name,
@@ -67,6 +68,9 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
             totalCells: project.width * project.height
           }
         });
+        console.log('✅ Plausible: Project Created event sent');
+      } else {
+        console.warn('⚠️ Plausible not loaded - event not tracked');
       }
 
       onProjectCreated(project);

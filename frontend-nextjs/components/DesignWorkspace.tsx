@@ -1141,6 +1141,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
       // Track PDF export event in Plausible
       if (typeof window !== 'undefined' && (window as any).plausible) {
+        console.log('🎯 Plausible: Tracking PDF Export event');
         (window as any).plausible('PDF Export', {
           props: {
             projectName: project.name,
@@ -1149,6 +1150,9 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             edgePattern: edgePattern
           }
         });
+        console.log('✅ Plausible: PDF Export event sent');
+      } else {
+        console.warn('⚠️ Plausible not loaded - PDF export event not tracked');
       }
 
       setAutoUpdating(false);
