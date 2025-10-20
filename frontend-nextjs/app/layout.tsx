@@ -4,6 +4,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Heklemønster Designverktøy',
   description: 'Lag egne mønster for heklevesker med filet-hekleteknikk',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
 }
 
 export default function RootLayout({

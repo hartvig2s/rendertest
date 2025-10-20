@@ -2340,3 +2340,512 @@ button, .btn {
 #root {
   height: 100vh;
 }
+
+/* ========================================
+   RESPONSIVE DESIGN - COMPREHENSIVE BREAKPOINTS
+   ======================================== */
+
+/* Mobile First: Base styles above are for mobile 375px+ */
+
+/* Tablet: 768px and up */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .app-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .workspace-title h1 {
+    font-size: 2rem;
+  }
+
+  .workspace-content {
+    grid-template-columns: 250px 4px 1fr 4px 250px !important;
+  }
+
+  .motif-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  }
+
+  .dual-grids-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .grid-controls {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .grid-zoom-controls {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .zoom-buttons {
+    flex-wrap: wrap;
+  }
+}
+
+/* Desktop: 1024px and up */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .app-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .workspace-title h1 {
+    font-size: 2.2rem;
+  }
+
+  .workspace-content {
+    grid-template-columns: 280px 4px 1fr 4px 280px !important;
+  }
+
+  .motif-grid {
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+  }
+
+  .dual-grids-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Large Desktop: 1440px and up */
+@media (min-width: 1440px) {
+  .app-main {
+    max-width: 1400px;
+  }
+
+  .workspace-content {
+    grid-template-columns: 320px 4px 1fr 4px 320px !important;
+  }
+
+  .motif-grid {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+  }
+
+  .workspace-title h1 {
+    font-size: 2.8rem;
+  }
+}
+
+/* Mobile: 375px to 767px */
+@media (max-width: 767px) {
+  /* Prevent horizontal scrolling */
+  body {
+    overflow-x: hidden;
+  }
+
+  .app {
+    min-width: 100%;
+  }
+
+  .app-header {
+    padding: 1rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .app-header p {
+    font-size: 0.9rem;
+  }
+
+  .app-main {
+    padding: 1rem 0.5rem;
+  }
+
+  .welcome-screen {
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .welcome-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .welcome-content p {
+    font-size: 1rem;
+  }
+
+  .quick-start {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .quick-start .btn {
+    width: 100%;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Project Creation Modal */
+  .project-creation-modal {
+    width: calc(100% - 2rem);
+    max-width: none;
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .project-creation-modal h2 {
+    font-size: 1.3rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .grid-preview {
+    padding: 0.75rem;
+  }
+
+  .grid-preview p {
+    font-size: 0.85rem;
+  }
+
+  /* Design Workspace */
+  .design-workspace {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .workspace-header {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .workspace-title h1 {
+    font-size: 1.4rem;
+  }
+
+  .workspace-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .workspace-actions .btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  /* Make workspace stack vertically on mobile */
+  .workspace-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  /* Hide resize handles on mobile */
+  .resize-handle {
+    display: none !important;
+  }
+
+  /* Panels full width on mobile */
+  .motif-panel,
+  .controls-panel {
+    width: 100% !important;
+    min-width: auto !important;
+    max-width: none !important;
+    max-height: 40vh;
+    order: 1;
+  }
+
+  .design-canvas {
+    width: 100% !important;
+    order: 2;
+    min-height: 50vh;
+  }
+
+  .motif-panel {
+    padding: 1rem;
+  }
+
+  .motif-panel h3,
+  .controls-panel h3,
+  .controls-panel h4 {
+    font-size: 1.1rem;
+  }
+
+  .motif-grid {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .motif-item {
+    padding: 0.5rem;
+  }
+
+  .motif-preview {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
+  }
+
+  .motif-item span {
+    font-size: 0.7rem;
+  }
+
+  /* Grid Controls */
+  .grid-controls {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .grid-size-info-section,
+  .color-picker-section,
+  .grid-zoom-controls {
+    width: 100%;
+  }
+
+  .grid-zoom-controls {
+    align-items: stretch;
+  }
+
+  .zoom-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .zoom-slider {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  /* Dual Grid View */
+  .dual-grids-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .grid-side {
+    padding: 0.75rem;
+  }
+
+  .grid-side-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .grid-side-header button {
+    width: 100%;
+  }
+
+  .crochet-grid-container {
+    max-height: 40vh !important;
+    overflow: auto;
+  }
+
+  /* Controls Panel */
+  .controls-panel {
+    padding: 1rem;
+  }
+
+  .edge-pattern-section,
+  .pattern-actions-section,
+  .copy-pattern-section,
+  .invert-pattern-section {
+    padding: 0.5rem;
+  }
+
+  .motif-control-item {
+    padding: 0.75rem;
+  }
+
+  .motif-size-control,
+  .motif-threshold-control,
+  .motif-flip-controls {
+    padding: 0.5rem;
+  }
+
+  .flip-buttons {
+    flex-direction: column;
+  }
+
+  .flip-buttons button {
+    width: 100%;
+  }
+
+  .motif-action-buttons {
+    flex-direction: column;
+  }
+
+  .motif-action-buttons button {
+    width: 100%;
+  }
+
+  /* Upload Section */
+  .upload-section {
+    margin-bottom: 1rem;
+  }
+
+  .motif-creation-buttons {
+    flex-direction: column;
+  }
+
+  .upload-button,
+  .text-button {
+    width: 100%;
+  }
+
+  /* Manual Fill Section */
+  .manual-fill-section {
+    margin-top: 1rem;
+  }
+
+  .manual-fill-actions {
+    flex-direction: column;
+  }
+
+  .manual-fill-actions button {
+    width: 100%;
+  }
+
+  .tool-mode-selector {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tool-mode-selector button {
+    flex: 1;
+  }
+
+  /* Category Selector */
+  .category-selector {
+    padding: 0.5rem;
+  }
+
+  .category-dropdown {
+    font-size: 0.85rem;
+  }
+
+  /* Color Options */
+  .color-options {
+    justify-content: flex-start;
+  }
+
+  .color-option {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Modal Dialog */
+  .modal-dialog {
+    width: calc(100% - 2rem);
+    min-width: auto;
+    max-width: none;
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .grid-size-inputs {
+    gap: 0.75rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .btn-small {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  /* Text Input */
+  .text-input-actions {
+    flex-direction: column;
+  }
+
+  .text-input-actions button {
+    width: 100%;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Form Actions */
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+
+  /* Legend */
+  .legend {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Pattern Stats */
+  .pattern-stats-section {
+    padding: 0.75rem;
+  }
+
+  /* Touch-friendly tap targets */
+  button,
+  .btn,
+  .motif-item,
+  .color-option,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improve touch scrolling */
+  .motif-panel,
+  .controls-panel,
+  .crochet-grid-container {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Extra Small Mobile: below 375px */
+@media (max-width: 374px) {
+  .app-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .workspace-title h1 {
+    font-size: 1.2rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .motif-grid {
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  }
+
+  .color-option {
+    width: 28px;
+    height: 28px;
+  }
+}

@@ -1694,13 +1694,24 @@
 .flip-buttons {
   display: flex;
   gap: 0.5rem;
-  justify-content: center;
+  justify-content: space-evenly;
+}
+
+.flip-buttons .btn {
+  padding: 0.28rem 0.56rem;
+  font-size: 0.56rem;
 }
 
 .motif-action-buttons {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.75rem;
+  justify-content: space-evenly;
+}
+
+.motif-action-buttons .btn {
+  padding: 0.28rem 0.56rem;
+  font-size: 0.56rem;
 }
 
 .size-slider-container {
@@ -2306,4 +2317,271 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+
+/* ========================================
+   COMPREHENSIVE RESPONSIVE DESIGN
+   Breakpoints: 375px, 768px, 1024px, 1440px
+   ======================================== */
+
+/* Extra Small Mobile: max-width 374px */
+@media (max-width: 374px) {
+  body {
+    overflow-x: hidden !important;
+  }
+
+  .workspace-header {
+    padding: 0.75rem !important;
+  }
+
+  .workspace-title h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .btn {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  .grid-controls {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+}
+
+/* Mobile: 375px - 767px */
+@media (min-width: 375px) and (max-width: 767px) {
+  /* Prevent horizontal scrolling */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Header responsiveness */
+  .workspace-header {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .workspace-title h1 {
+    font-size: 1.8rem !important;
+  }
+
+  .workspace-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Make workspace stack vertically on mobile */
+  .workspace-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  /* Hide resize handles on mobile */
+  .resize-handle {
+    display: none !important;
+  }
+
+  /* Panels full width on mobile */
+  .motif-panel,
+  .controls-panel {
+    width: 100% !important;
+    min-width: auto !important;
+    max-width: none !important;
+    max-height: 40vh;
+    order: 1;
+  }
+
+  .design-canvas {
+    width: 100% !important;
+    order: 2;
+    min-height: 50vh;
+  }
+
+  /* Grid controls stack vertically */
+  .grid-controls {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .grid-zoom-controls,
+  .grid-size-info-section,
+  .color-picker-section {
+    align-items: stretch !important;
+  }
+
+  .grid-zoom-controls label,
+  .zoom-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Dual grids stack vertically */
+  .dual-grids-container {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  /* Touch-friendly tap targets */
+  button,
+  .btn,
+  .motif-item,
+  .color-option,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Buttons full width */
+  .form-actions,
+  .workspace-actions,
+  .manual-fill-actions,
+  .motif-action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .form-actions button,
+  .workspace-actions button,
+  .manual-fill-actions button,
+  .motif-action-buttons button {
+    width: 100%;
+  }
+
+  /* Modal adjustments */
+  .project-creation-modal,
+  .modal-dialog {
+    width: calc(100% - 2rem) !important;
+    margin: 1rem;
+    min-width: auto !important;
+  }
+
+  /* Form row stacks on mobile */
+  .form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Typography scaling */
+  .app-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .welcome-content h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Tablet: 768px - 1023px */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .workspace-content {
+    grid-template-columns: 250px 4px 1fr 4px 250px !important;
+  }
+
+  .workspace-title h1 {
+    font-size: 2.2rem !important;
+  }
+
+  .dual-grids-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .motif-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  }
+
+  .grid-controls {
+    flex-wrap: wrap;
+  }
+
+  /* Resize handles still visible but smaller */
+  .resize-handle {
+    width: 3px;
+  }
+}
+
+/* Desktop: 1024px - 1439px */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .app-main {
+    max-width: 1100px;
+  }
+
+  .workspace-content {
+    grid-template-columns: 280px 4px 1fr 4px 280px !important;
+  }
+
+  .workspace-title h1 {
+    font-size: 2.4rem !important;
+  }
+
+  .dual-grids-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .motif-grid {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+  }
+}
+
+/* Large Desktop: 1440px+ */
+@media (min-width: 1440px) {
+  .app-main {
+    max-width: 1400px;
+  }
+
+  .workspace-content {
+    grid-template-columns: 320px 4px 1fr 4px 320px !important;
+  }
+
+  .workspace-title h1 {
+    font-size: 2.8rem !important;
+  }
+
+  .dual-grids-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .motif-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+
+  .btn {
+    padding: 1.1rem 2.2rem;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase tap targets for touch */
+  button,
+  .btn,
+  .motif-item,
+  .color-option,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem 1.5rem;
+  }
+
+  /* Remove hover effects on touch devices */
+  .motif-item:hover,
+  .btn:hover,
+  .color-option:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Optimize scrolling for touch */
+  .motif-panel,
+  .controls-panel,
+  .crochet-grid-container {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
 }
