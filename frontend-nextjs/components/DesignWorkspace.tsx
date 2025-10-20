@@ -1,8 +1,9 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { pdf } from '@react-pdf/renderer';
 import { PatternPDF } from './PatternPDF';
+import { motifFiles } from '@/lib/motifs';
 
 interface Project {
   name: string;
@@ -61,7 +62,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [edgePattern, setEdgePattern] = useState<'none' | 'border-1' | 'border-2' | 'corner-triangles' | 'checkerboard-edges' | 'snake-pattern' | 'stepped-border' | 'checkerboard-2row'>('border-1');
   const [gridWidth, setGridWidth] = useState<number>(project.width);
   const [gridHeight, setGridHeight] = useState<number>(project.height);
-  const [showGridSizeDialog, setShowGridSizeDialog] = useState<boolean>(false);
 
   // Undo/Redo history
   const [history, setHistory] = useState<{
@@ -70,8 +70,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     manualFillCells: {front: Map<string, string>, back: Map<string, string>};
   }[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
-  const [newGridWidth, setNewGridWidth] = useState<number>(project.width);
-  const [newGridHeight, setNewGridHeight] = useState<number>(project.height);
 
   // Helper function to calculate maximum motif size based on grid dimensions
   // 120% = maximum allowed size for illustrations
@@ -358,9 +356,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   useEffect(() => {
     const loadLibraryMotifs = async () => {
       try {
-        // Import static list of motifs
-        const { motifFiles } = await import('@/lib/motifs');
-
+        // Use static motif list for Next.js (import.meta.glob doesn't work)
         const loadedMotifs = await Promise.all(
           motifFiles.map(async (filename) => {
             try {
@@ -665,6 +661,11 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   };
 
   const renderGrid = (side: 'front' | 'back', pattern: any, motifs: PlacedMotif[]) => {
+    // Auto-calculate cell size to fit both grids in available width
+    // Assuming ~50% of screen width is available for center panel with 2 grids
+    const cellSize = Math.max(8, Math.min(25, 600 / gridWidth));
+    const padding = Math.max(4, Math.round(cellSize * 0.15));
+
     return (
       <div
         className="crochet-grid interactive-grid"
@@ -672,10 +673,10 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         onDragOver={handleGridDragOver}
         style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(${gridWidth}, ${Math.max(6, Math.min(30, (300 / gridWidth) * gridZoom))}px)`,
+        gridTemplateColumns: `repeat(${gridWidth}, ${cellSize}px)`,
         gap: '0px',
         background: '#e0e0e0',
-        padding: `${Math.max(4, Math.round(4 * gridZoom))}px`,
+        padding: `${padding}px`,
         position: 'relative'
       }}>
         {pattern.grid.map((row: boolean[], rowIndex: number) =>
@@ -694,7 +695,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
             // Manual fills should always show with their color, not affected by interpretation toggle
             const isManuallyFilled = hasManualFill;
-            const cellSize = Math.max(6, Math.min(30, (300 / gridWidth) * gridZoom));
 
             // Check if any motif is at this position
             const motifsAtPosition = motifs.filter(motif => {
@@ -1139,22 +1139,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      // Track PDF export event in Plausible
-      if (typeof window !== 'undefined' && (window as any).plausible) {
-        console.log('🎯 Plausible: Tracking PDF Export event');
-        (window as any).plausible('PDF Export', {
-          props: {
-            projectName: project.name,
-            gridSize: `${gridWidth}x${gridHeight}`,
-            motifsCount: placedMotifs.length + backSideMotifs.length,
-            edgePattern: edgePattern
-          }
-        });
-        console.log('✅ Plausible: PDF Export event sent');
-      } else {
-        console.warn('⚠️ Plausible not loaded - PDF export event not tracked');
-      }
-
       setAutoUpdating(false);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -1204,17 +1188,21 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size and font - using moderate size and weight
+    // Set canvas size and font - using Georgia with letter spacing
     const fontSize = 56;
     const padding = 12;
+    const letterSpacing = fontSize * 0.15; // 15% letter spacing
 
-    ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+    ctx.font = `bold ${fontSize}px Georgia, serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
 
-    // Measure text to determine canvas size
-    const textMetrics = ctx.measureText(text);
-    const textWidth = textMetrics.width;
+    // Measure text width with letter spacing
+    let textWidth = 0;
+    for (let i = 0; i < text.length; i++) {
+      textWidth += ctx.measureText(text[i]).width;
+      if (i < text.length - 1) textWidth += letterSpacing;
+    }
     const textHeight = fontSize;
 
     canvas.width = textWidth + (padding * 2);
@@ -1225,18 +1213,26 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Re-set font after canvas resize
-    ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+    ctx.font = `bold ${fontSize}px Georgia, serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
 
-    // Draw text with thin stroke for slight emphasis
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 1.5;
-    ctx.strokeText(text, padding, padding);
+    // Draw text with letter spacing
+    let x = padding;
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
 
-    // Fill text with black
-    ctx.fillStyle = 'black';
-    ctx.fillText(text, padding, padding);
+      // Draw stroke
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 1.5;
+      ctx.strokeText(char, x, padding);
+
+      // Fill text
+      ctx.fillStyle = 'black';
+      ctx.fillText(char, x, padding);
+
+      x += ctx.measureText(char).width + letterSpacing;
+    }
 
     // Convert to base64
     const imageData = canvas.toDataURL('image/png');
@@ -1278,24 +1274,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  const handleGridSizeChange = () => {
-    // Update grid dimensions
-    setGridWidth(newGridWidth);
-    setGridHeight(newGridHeight);
-
-    // Update project dimensions
-    project.width = newGridWidth;
-    project.height = newGridHeight;
-
-    // Regenerate patterns with new grid size
-    setAutoUpdating(true);
-    setTimeout(async () => {
-      await handleGeneratePattern();
-      setAutoUpdating(false);
-    }, 100);
-
-    setShowGridSizeDialog(false);
-  };
 
   const convertImageToPixelArt = (imageData: string, motifSize: number, gridX: number, gridY: number, grid: boolean[][], threshold: number = 128, flipHorizontal: boolean = false, flipVertical: boolean = false) => {
     return new Promise<void>((resolve) => {
@@ -1620,23 +1598,35 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           }}
         />
 
-        <main className="design-canvas">
+        <main className="design-canvas" style={{ overflowY: 'auto' }}>
           <div className="grid-container" data-testid="grid-container">
             {true ? (
               <div className="dual-grid-view">
                 <div className="grid-controls">
                   <div className="grid-size-info-section">
-                    <label>{gridWidth} × {gridHeight} ({(gridWidth * 1.0).toFixed(1)} × {(gridHeight * 0.9).toFixed(1)} cm)</label>
+                    <label>Størrelse:</label>
+                    <div className="grid-size-value">{(gridWidth * 1.0).toFixed(0)} * {(gridHeight * 0.9).toFixed(0)} cm</div>
                     <button
-                      onClick={() => {
-                        setNewGridWidth(gridWidth);
-                        setNewGridHeight(gridHeight);
-                        setShowGridSizeDialog(true);
-                      }}
                       className="btn btn-small btn-secondary"
-                      title="Endre rutenettstørrelse"
+                      onClick={() => {
+                        const newWidthCm = prompt('Bredde (cm):', (gridWidth * 1.0).toFixed(1));
+                        const newHeightCm = prompt('Høyde (cm):', (gridHeight * 0.9).toFixed(1));
+                        if (newWidthCm && newHeightCm) {
+                          const widthCm = parseFloat(newWidthCm);
+                          const heightCm = parseFloat(newHeightCm);
+                          if (!isNaN(widthCm) && !isNaN(heightCm) && widthCm >= 8 && widthCm <= 200 && heightCm >= 7.2 && heightCm <= 180) {
+                            const newWidth = Math.round(widthCm / 1.0);
+                            const newHeight = Math.round(heightCm / 0.9);
+                            setGridWidth(newWidth);
+                            setGridHeight(newHeight);
+                          } else {
+                            alert('Bredde må være mellom 8 og 200 cm, høyde må være mellom 7.2 og 180 cm');
+                          }
+                        }
+                      }}
+                      title="Endre rutenettets størrelse"
                     >
-                      Endre størrelse
+                      Rediger størrelse
                     </button>
                   </div>
 
@@ -1660,40 +1650,48 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     </div>
                   </div>
 
-                  <div className="grid-zoom-controls">
-                    <label>Rutenettstørrelse: {(gridZoom * 100).toFixed(0)}%</label>
-                    <div className="zoom-buttons">
-                      <button
-                        className="btn btn-small btn-secondary"
-                        onClick={() => setGridZoom(Math.max(0.5, gridZoom - 0.25))}
-                        disabled={gridZoom <= 0.5}
-                      >
-                        −
-                      </button>
-                      <input
-                        type="range"
-                        min="0.5"
-                        max="3.0"
-                        step="0.25"
-                        value={gridZoom}
-                        onChange={(e) => setGridZoom(parseFloat(e.target.value))}
-                        className="zoom-slider"
-                      />
-                      <button
-                        className="btn btn-small btn-secondary"
-                        onClick={() => setGridZoom(Math.min(3.0, gridZoom + 0.25))}
-                        disabled={gridZoom >= 3.0}
-                      >
-                        +
-                      </button>
-                      <button
-                        className="btn btn-small btn-outline"
-                        onClick={() => setGridZoom(1.0)}
-                      >
-                        Reset
-                      </button>
-                    </div>
+                  <div className="edge-pattern-section">
+                    <label>Kantmønster:</label>
+                    <select
+                      value={edgePattern}
+                      onChange={(e) => setEdgePattern(e.target.value as any)}
+                      className="edge-pattern-select"
+                    >
+                      <option value="none">Ingen</option>
+                      <option value="border-1">Enkel kant</option>
+                      <option value="border-2">Dobbel kant</option>
+                      <option value="corner-triangles">Hjørnetriangel</option>
+                      <option value="checkerboard-edges">Sjakkmønster kant</option>
+                      <option value="snake-pattern">Keltisk fletting</option>
+                      <option value="stepped-border">Trappekant</option>
+                      <option value="checkerboard-2row">Mini sjakkmønster</option>
+                    </select>
                   </div>
+
+                  <div className="copy-pattern-section">
+                    <label>Kopier:</label>
+                    <button
+                      className="btn btn-small btn-secondary"
+                      onClick={handleCopyFrontToBack}
+                      title="Kopier forside-design til bakside"
+                      disabled={placedMotifs.length === 0}
+                    >
+                      Forside → bakside
+                    </button>
+                  </div>
+
+                  <div className="invert-pattern-section">
+                    <label>Mønster:</label>
+                    <button
+                      className="btn btn-small btn-secondary"
+                      data-testid="stitch-interpretation-toggle"
+                      onClick={toggleStitchInterpretation}
+                      title="Bytt fyllte og åpne ruter"
+                    >
+                      Invertér
+                    </button>
+                  </div>
+
                 </div>
 
                 <div className="dual-grids-container">
@@ -1717,9 +1715,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       onDragEnter={(e) => handleGridDragEnter(e, 'front')}
                       onDragLeave={handleGridDragLeave}
                       style={{
-                        maxWidth: '100%',
-                        maxHeight: '60vh',
-                        overflow: 'auto',
                         border: currentSide === 'front' ? '3px solid #3498db' : '2px solid #ccc',
                         borderRadius: '4px',
                         background: dragOverSide === 'front' ? '#e8f5e8' : '#f5f5f5',
@@ -1750,9 +1745,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       onDragEnter={(e) => handleGridDragEnter(e, 'back')}
                       onDragLeave={handleGridDragLeave}
                       style={{
-                        maxWidth: '100%',
-                        maxHeight: '60vh',
-                        overflow: 'auto',
                         border: currentSide === 'back' ? '3px solid #3498db' : '2px solid #ccc',
                         borderRadius: '4px',
                         background: dragOverSide === 'back' ? '#e8f5e8' : '#f5f5f5',
@@ -1809,52 +1801,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           className="controls-panel"
           style={{ width: `${rightPanelWidth}px`, minWidth: `${rightPanelWidth}px`, overflow: 'auto' }}
         >
-          {/* Edge Pattern */}
-          <div className="edge-pattern-section" style={{ marginBottom: '1rem' }}>
-            <label>Kantmønster:</label>
-            <select
-              value={edgePattern}
-              onChange={(e) => setEdgePattern(e.target.value as any)}
-              className="edge-pattern-select"
-            >
-              <option value="none">Ingen</option>
-              <option value="border-1">Enkel kant</option>
-              <option value="border-2">Dobbel kant</option>
-              <option value="corner-triangles">Hjørnetriangel</option>
-              <option value="checkerboard-edges">Sjakkmønster kant</option>
-              <option value="snake-pattern">Keltisk fletting</option>
-              <option value="stepped-border">Trappekant</option>
-              <option value="checkerboard-2row">Mini sjakkmønster</option>
-            </select>
-          </div>
-
-          {/* Pattern Actions */}
-          <div className="pattern-actions-section" style={{ marginBottom: '1rem' }}>
-            <div className="copy-pattern-section" style={{ marginBottom: '0.5rem' }}>
-              <label>Kopier:</label>
-              <button
-                className="btn btn-small btn-secondary"
-                onClick={handleCopyFrontToBack}
-                title="Kopier forside-design til bakside"
-                disabled={placedMotifs.length === 0}
-              >
-                Forside → bakside
-              </button>
-            </div>
-
-            <div className="invert-pattern-section">
-              <label>Mønster:</label>
-              <button
-                className="btn btn-small btn-secondary"
-                data-testid="stitch-interpretation-toggle"
-                onClick={toggleStitchInterpretation}
-                title="Bytt fyllte og åpne ruter"
-              >
-                Invertér
-              </button>
-            </div>
-          </div>
-
           {/* Motif Controls */}
           <div className="motif-controls-section">
             <h4>Plasserte motiver</h4>
@@ -1986,62 +1932,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         </aside>
 
       </div>
-
-      {/* Grid Size Dialog */}
-      {showGridSizeDialog && (
-        <div className="modal-overlay" onClick={() => setShowGridSizeDialog(false)}>
-          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-            <h3>Endre rutenettstørrelse</h3>
-            <p className="modal-description">
-              Juster rutenettstørrelsen. Motiver vil beholde sine prosentvise posisjoner.
-            </p>
-
-            <div className="grid-size-inputs">
-              <div className="input-group">
-                <label htmlFor="grid-width">Bredde (ruter):</label>
-                <input
-                  id="grid-width"
-                  type="number"
-                  min="10"
-                  max="200"
-                  value={newGridWidth}
-                  onChange={(e) => setNewGridWidth(parseInt(e.target.value) || 10)}
-                />
-                <span className="input-hint">{(newGridWidth * 1.0).toFixed(1)} cm</span>
-              </div>
-
-              <div className="input-group">
-                <label htmlFor="grid-height">Høyde (ruter):</label>
-                <input
-                  id="grid-height"
-                  type="number"
-                  min="10"
-                  max="200"
-                  value={newGridHeight}
-                  onChange={(e) => setNewGridHeight(parseInt(e.target.value) || 10)}
-                />
-                <span className="input-hint">{(newGridHeight * 0.9).toFixed(1)} cm</span>
-              </div>
-            </div>
-
-            <div className="modal-actions">
-              <button
-                className="btn btn-secondary"
-                onClick={() => setShowGridSizeDialog(false)}
-              >
-                Avbryt
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={handleGridSizeChange}
-                disabled={newGridWidth < 10 || newGridHeight < 10}
-              >
-                Bruk endringer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
