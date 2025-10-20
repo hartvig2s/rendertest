@@ -9,8 +9,8 @@ interface ProjectCreationProps {
 
 export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreated, onCancel }) => {
   const [name, setName] = useState('');
-  const [widthCm, setWidthCm] = useState(40);
-  const [heightCm, setHeightCm] = useState(45);
+  const [widthCm, setWidthCm] = useState(30);
+  const [heightCm, setHeightCm] = useState(35);
   const [errors, setErrors] = useState<string[]>([]);
 
   // Calculate grid squares from cm
