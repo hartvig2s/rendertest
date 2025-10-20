@@ -81,7 +81,6 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
     <div className="project-creation">
       <div className="project-creation-modal">
         <h2>Opprett Nytt Prosjekt</h2>
-        <p>Design et egendefinert heklemønster for veske</p>
 
         {errors.length > 0 && (
           <div className="error-messages" data-testid="error-message">
@@ -137,14 +136,6 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
               />
               <small>7.2-180 cm (≈0.9 cm per rute)</small>
             </div>
-          </div>
-
-          <div className="grid-preview">
-            <p>Rutenettstørrelse: {gridWidth} × {gridHeight} ruter</p>
-            <p>Inndata: {widthCm.toFixed(1)} × {heightCm.toFixed(1)} cm</p>
-            <p>Faktisk rutenett: {(gridWidth * 1.0).toFixed(1)} × {(gridHeight * 0.9).toFixed(1)} cm</p>
-            <p>Totalt masker: {gridWidth * gridHeight}</p>
-            <p>Estimert garn: {Math.ceil((gridWidth * gridHeight * 4 * 0.95) / 7500)} nøste{Math.ceil((gridWidth * gridHeight * 4 * 0.95) / 7500) !== 1 ? 'r' : ''}</p>
           </div>
 
           <div className="form-actions">
