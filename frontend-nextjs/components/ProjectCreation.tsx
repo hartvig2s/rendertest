@@ -113,11 +113,10 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
                 id="width"
                 name="width"
                 type="number"
-                min={8}
                 max={200}
                 step={0.5}
                 value={widthCm}
-                onChange={(e) => setWidthCm(parseFloat(e.target.value) || 8)}
+                onChange={(e) => setWidthCm(parseFloat(e.target.value) || 0)}
               />
               <small>8-200 cm (1 cm = 1 rute)</small>
             </div>
@@ -128,11 +127,10 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
                 id="height"
                 name="height"
                 type="number"
-                min={7.2}
                 max={180}
                 step={0.1}
                 value={heightCm}
-                onChange={(e) => setHeightCm(parseFloat(e.target.value) || 7.2)}
+                onChange={(e) => setHeightCm(parseFloat(e.target.value) || 0)}
               />
               <small>7.2-180 cm (≈0.9 cm per rute)</small>
             </div>
