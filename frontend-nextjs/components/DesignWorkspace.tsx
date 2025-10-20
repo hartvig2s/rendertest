@@ -1404,7 +1404,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         className="workspace-content"
         style={{
           display: 'grid',
-          gridTemplateColumns: `${leftPanelWidth}px 4px 1fr 4px ${rightPanelWidth}px`,
+          gridTemplateColumns: `${leftPanelWidth}px 1rem 1fr 1rem ${rightPanelWidth}px`,
           gap: '0',
           padding: '1rem',
           overflow: 'hidden'
@@ -1612,6 +1612,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           className={`resize-handle left-handle ${isResizing === 'left' ? 'resizing' : ''}`}
           onMouseDown={(e) => handleResizeStart('left', e)}
           title="Dra for å endre størrelse på motivpanel"
+          style={{
+            width: '4px',
+            background: 'transparent',
+            cursor: 'col-resize',
+            position: 'relative'
+          }}
         />
 
         <main className="design-canvas">
@@ -1790,6 +1796,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           className={`resize-handle right-handle ${isResizing === 'right' ? 'resizing' : ''}`}
           onMouseDown={(e) => handleResizeStart('right', e)}
           title="Dra for å endre størrelse på kontrollpanel"
+          style={{
+            width: '4px',
+            background: 'transparent',
+            cursor: 'col-resize',
+            position: 'relative'
+          }}
         />
 
         {/* Right Panel - Motif Controls */}
@@ -1914,7 +1926,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                               <input
                                 type="range"
                                 min="0"
-                                max="255"
+                                max="230"
                                 step="5"
                                 value={motif.threshold}
                                 onChange={(e) => handleMotifThreshold(motif.id, parseInt(e.target.value))}
