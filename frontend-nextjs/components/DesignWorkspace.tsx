@@ -1368,6 +1368,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         </div>
         <div className="workspace-actions">
           <button
+            className="btn btn-secondary"
+            onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLScqOCph9RL1wJwa3bglCA-fPsgcGnpMLZXOyG9jt5RRs1ZTpg/viewform?pli=1', '_blank')}
+            title="Gi oss tilbakemeldinger på verktøyet"
+          >
+            Gi oss tilbakemeldinger
+          </button>
+          <button
             className="btn btn-export"
             onClick={handleExportPattern}
             disabled={(!generatedPattern && !backSidePattern) || autoUpdating}
