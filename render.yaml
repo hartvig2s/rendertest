@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: heklemønster-designverktøy
+    env: static
+    rootDir: frontend-nextjs
+    buildCommand: npm install && npm run build
+    staticPublishPath: out
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
