@@ -1609,30 +1609,31 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               <div className="dual-grid-view">
                 <div className="grid-controls">
                   <div className="grid-size-info-section">
-                    <label>Størrelse:</label>
-                    <div className="grid-size-value">{(gridWidth * 1.0).toFixed(0)} * {(gridHeight * 0.9).toFixed(0)} cm</div>
-                    <button
-                      className="btn btn-small btn-secondary"
-                      onClick={() => {
-                        const newWidthCm = prompt('Bredde (cm):', (gridWidth * 1.0).toFixed(1));
-                        const newHeightCm = prompt('Høyde (cm):', (gridHeight * 0.9).toFixed(1));
-                        if (newWidthCm && newHeightCm) {
-                          const widthCm = parseFloat(newWidthCm);
-                          const heightCm = parseFloat(newHeightCm);
-                          if (!isNaN(widthCm) && !isNaN(heightCm) && widthCm >= 8 && widthCm <= 200 && heightCm >= 7.2 && heightCm <= 180) {
-                            const newWidth = Math.round(widthCm / 1.0);
-                            const newHeight = Math.round(heightCm / 0.9);
-                            setGridWidth(newWidth);
-                            setGridHeight(newHeight);
-                          } else {
-                            alert('Bredde må være mellom 8 og 200 cm, høyde må være mellom 7.2 og 180 cm');
-                          }
-                        }
-                      }}
-                      title="Endre rutenettets størrelse"
-                    >
-                      Rediger størrelse
-                    </button>
+                    <label>Bredde: {(gridWidth * 1.0).toFixed(0)} cm</label>
+                    <input
+                      type="range"
+                      min="8"
+                      max="200"
+                      step="1"
+                      value={gridWidth}
+                      onChange={(e) => setGridWidth(parseInt(e.target.value))}
+                      className="size-slider"
+                      title={`Rutenettbredde: ${gridWidth} cm`}
+                    />
+                  </div>
+
+                  <div className="grid-size-info-section">
+                    <label>Høyde: {(gridHeight * 0.9).toFixed(0)} cm</label>
+                    <input
+                      type="range"
+                      min="8"
+                      max="200"
+                      step="1"
+                      value={gridHeight}
+                      onChange={(e) => setGridHeight(parseInt(e.target.value))}
+                      className="size-slider"
+                      title={`Rutenetthøyde: ${(gridHeight * 0.9).toFixed(0)} cm`}
+                    />
                   </div>
 
                   <div className="color-picker-section">
@@ -1699,9 +1700,21 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
                 </div>
 
-                <div className="dual-grids-container">
+                <div
+                  className="dual-grids-container"
+                  style={{
+                    overflowX: 'auto',
+                    overflowY: 'hidden',
+                    display: 'flex',
+                    gap: '1rem',
+                    paddingBottom: '1rem'
+                  }}
+                >
                   {/* Front Grid */}
-                  <div className={`grid-side ${currentSide === 'front' ? 'active' : 'inactive'}`}>
+                  <div
+                    className={`grid-side ${currentSide === 'front' ? 'active' : 'inactive'}`}
+                    style={{ flex: '0 0 auto', minWidth: 'fit-content' }}
+                  >
                     <div className="grid-side-header">
                       <h4>Forside</h4>
                       <button
@@ -1731,7 +1744,10 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   </div>
 
                   {/* Back Grid */}
-                  <div className={`grid-side ${currentSide === 'back' ? 'active' : 'inactive'}`}>
+                  <div
+                    className={`grid-side ${currentSide === 'back' ? 'active' : 'inactive'}`}
+                    style={{ flex: '0 0 auto', minWidth: 'fit-content' }}
+                  >
                     <div className="grid-side-header">
                       <h4>Bakside</h4>
                       <button
