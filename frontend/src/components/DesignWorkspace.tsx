@@ -1603,7 +1603,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           }}
         />
 
-        <main className="design-canvas" style={{ overflowY: 'auto' }}>
+        <main className="design-canvas" style={{ overflow: 'auto' }}>
           <div className="grid-container" data-testid="grid-container">
             {true ? (
               <div className="dual-grid-view">
@@ -1703,8 +1703,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 <div
                   className="dual-grids-container"
                   style={{
-                    overflowX: 'auto',
-                    overflowY: 'hidden',
                     display: 'flex',
                     gap: '1rem',
                     paddingBottom: '1rem'
