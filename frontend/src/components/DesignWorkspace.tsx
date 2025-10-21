@@ -60,6 +60,15 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [gridWidth, setGridWidth] = useState<number>(project.width);
   const [gridHeight, setGridHeight] = useState<number>(project.height);
 
+  // Mobile touch gesture states
+  const [touchStartTime, setTouchStartTime] = useState<number | null>(null);
+  const [touchStartPos, setTouchStartPos] = useState<{x: number, y: number} | null>(null);
+  const [isDraggingTouch, setIsDraggingTouch] = useState<boolean>(false);
+  const [isPinching, setIsPinching] = useState<boolean>(false);
+  const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
+  const [activeTouchMotifId, setActiveTouchMotifId] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
   // Undo/Redo history
   const [history, setHistory] = useState<{
     placedMotifs: PlacedMotif[];
@@ -349,6 +358,17 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     }
   };
 
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia('(max-width: 767px)').matches);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Load motifs from public folder on mount
   useEffect(() => {
     const loadLibraryMotifs = async () => {
@@ -580,6 +600,83 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     }
   };
 
+  // Touch gesture handlers
+  const calculateDistance = (touch1: React.Touch, touch2: React.Touch) => {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent, motifId?: string, gridX?: number, gridY?: number) => {
+    if (e.touches.length === 1 && motifId) {
+      // Single touch - potential long-press for dragging
+      const touch = e.touches[0];
+      setTouchStartTime(Date.now());
+      setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+      setActiveTouchMotifId(motifId);
+
+      // Set timeout for long-press detection (2 seconds)
+      setTimeout(() => {
+        const now = Date.now();
+        if (touchStartTime && now - touchStartTime >= 2000 && !isPinching) {
+          setIsDraggingTouch(true);
+          // Haptic feedback if available
+          if (navigator.vibrate) {
+            navigator.vibrate(50);
+          }
+        }
+      }, 2000);
+    } else if (e.touches.length === 2 && motifId) {
+      // Two touches - pinch to zoom
+      e.preventDefault();
+      const distance = calculateDistance(e.touches[0], e.touches[1]);
+      setInitialPinchDistance(distance);
+      setIsPinching(true);
+      setActiveTouchMotifId(motifId);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent, gridX: number, gridY: number) => {
+    if (isDraggingTouch && activeTouchMotifId && e.touches.length === 1) {
+      // Dragging motif
+      e.preventDefault();
+      const x = (gridX / gridWidth) * 100;
+      const y = (gridY / gridHeight) * 100;
+
+      setCurrentMotifs(prev => prev.map(motif =>
+        motif.id === activeTouchMotifId ? { ...motif, x, y } : motif
+      ));
+    } else if (isPinching && activeTouchMotifId && e.touches.length === 2) {
+      // Pinch to resize
+      e.preventDefault();
+      const currentDistance = calculateDistance(e.touches[0], e.touches[1]);
+      if (initialPinchDistance) {
+        const scale = currentDistance / initialPinchDistance;
+        const motif = getCurrentMotifs().find(m => m.id === activeTouchMotifId);
+        if (motif) {
+          const newSize = Math.max(0.1, Math.min(getMaxMotifSize(), motif.size * scale));
+          handleMotifResize(activeTouchMotifId, newSize);
+          setInitialPinchDistance(currentDistance); // Update for next iteration
+        }
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (isDraggingTouch && e.touches.length === 0) {
+      // End dragging
+      setIsDraggingTouch(false);
+      setActiveTouchMotifId(null);
+      setTouchStartTime(null);
+      setTouchStartPos(null);
+    } else if (isPinching && e.touches.length < 2) {
+      // End pinching
+      setIsPinching(false);
+      setInitialPinchDistance(null);
+      setActiveTouchMotifId(null);
+    }
+  };
+
   const handleGridDrop = (e: React.DragEvent, side: 'front' | 'back') => {
     e.preventDefault();
     e.stopPropagation();
@@ -764,6 +861,17 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   }
                 }}
                 onMouseUp={handleGridMotifDragEnd}
+                onTouchStart={(e) => {
+                  if (motifsAtPosition.length > 0) {
+                    handleTouchStart(e, motifsAtPosition[0].id, colIndex, rowIndex);
+                  }
+                }}
+                onTouchMove={(e) => {
+                  if (isDraggingTouch || isPinching) {
+                    handleTouchMove(e, colIndex, rowIndex);
+                  }
+                }}
+                onTouchEnd={handleTouchEnd}
               >
               </div>
             );
@@ -1699,6 +1807,26 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   </div>
 
                 </div>
+
+                {/* Mobile Grid Toggle Button */}
+                {isMobile && (
+                  <div className="mobile-grid-toggle">
+                    <button
+                      className={currentSide === 'front' ? 'active' : ''}
+                      onClick={() => setCurrentSide('front')}
+                      type="button"
+                    >
+                      Forside
+                    </button>
+                    <button
+                      className={currentSide === 'back' ? 'active' : ''}
+                      onClick={() => setCurrentSide('back')}
+                      type="button"
+                    >
+                      Bakside
+                    </button>
+                  </div>
+                )}
 
                 <div
                   className="dual-grids-container"

@@ -2543,6 +2543,29 @@ button, .btn {
     padding: 0.75rem;
   }
 
+  /* Mobile UI Reordering: Export button, then color picker, then grid */
+  .workspace-header {
+    order: 1;
+  }
+
+  .design-canvas {
+    order: 3 !important;
+  }
+
+  .motif-panel {
+    order: 4 !important;
+  }
+
+  .controls-panel {
+    order: 2 !important;
+  }
+
+  /* Move color picker to top of controls panel on mobile */
+  .controls-panel .color-picker-section {
+    order: -1;
+    margin-bottom: 1rem;
+  }
+
   /* Hide resize handles on mobile */
   .resize-handle {
     display: none !important;
@@ -2620,14 +2643,56 @@ button, .btn {
     min-width: 100px;
   }
 
-  /* Dual Grid View */
+  /* Dual Grid View - Show only one grid at a time on mobile */
   .dual-grids-container {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    display: flex !important;
+    flex-direction: column;
+    gap: 0;
   }
 
-  .grid-side {
+  /* Hide inactive grid on mobile */
+  .grid-side.inactive {
+    display: none !important;
+  }
+
+  .grid-side.active {
+    display: block !important;
     padding: 0.75rem;
+    width: 100% !important;
+  }
+
+  /* Mobile grid toggle button */
+  .mobile-grid-toggle {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+
+  .mobile-grid-toggle button {
+    flex: 1;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    background: #FFFBF5;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-grid-toggle button.active {
+    background: #3498db;
+    color: #FFFBF5;
+    border-color: #3498db;
+  }
+
+  .mobile-grid-toggle button:not(.active):active {
+    background: #e8f5e8;
+    border-color: #4CAF50;
   }
 
   .grid-side-header {
@@ -2637,13 +2702,36 @@ button, .btn {
     gap: 0.5rem;
   }
 
+  /* Hide desktop activate buttons on mobile - we use the toggle instead */
+  .grid-side-header button.btn-activate {
+    display: none !important;
+  }
+
   .grid-side-header button {
     width: 100%;
   }
 
   .crochet-grid-container {
-    max-height: 40vh !important;
+    max-height: 50vh !important;
     overflow: auto;
+    width: 100% !important;
+  }
+
+  /* Make grid fill available width on mobile */
+  .crochet-grid {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Adjust grid cell size for mobile */
+  .crochet-cell {
+    min-width: 8px !important;
+    min-height: 8px !important;
+  }
+
+  /* Full-width grid view on mobile */
+  .grid-side.active .crochet-grid-container {
+    padding: 0.5rem;
   }
 
   /* Controls Panel */
@@ -2847,5 +2935,17 @@ button, .btn {
   .color-option {
     width: 28px;
     height: 28px;
+  }
+
+  /* Show mobile grid toggle only on mobile */
+  .mobile-grid-toggle {
+    display: flex !important;
+  }
+}
+
+/* Hide mobile grid toggle on desktop */
+@media (min-width: 768px) {
+  .mobile-grid-toggle {
+    display: none !important;
   }
 }
