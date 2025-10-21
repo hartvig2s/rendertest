@@ -951,6 +951,69 @@
   border: 1px solid #e0e0e0;
 }
 
+/* Placed Motifs Compact Library Section */
+.placed-motifs-library-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.placed-motifs-library-section h4 {
+  margin: 0 0 0.75rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.placed-motifs-compact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.placed-motif-compact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #FFFBF5;
+}
+
+.placed-motif-compact-item:hover {
+  border-color: #3498db;
+  background: #f0f8ff;
+}
+
+.placed-motif-compact-item.selected {
+  border-color: #3498db;
+  background: #e3f2fd;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+}
+
+.motif-compact-name {
+  font-size: 0.85rem;
+  color: #2c3e50;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.no-motifs-compact {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 0;
+  text-align: center;
+  padding: 0.5rem;
+}
+
 /* Motif Controls */
 .placed-motif.selected {
   box-shadow: 0 4px 20px rgba(52, 152, 219, 0.4) !important;

@@ -1443,6 +1443,34 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             </>
           )}
 
+          {/* Placed Motifs Section - moved below library */}
+          <div className="placed-motifs-library-section">
+            <h4>Plasserte motiver</h4>
+            {getCurrentMotifs().length > 0 ? (
+              <div className="placed-motifs-compact-list">
+                {getCurrentMotifs().map((motif) => (
+                  <div
+                    key={motif.id}
+                    className={`placed-motif-compact-item ${selectedMotifId === motif.id ? 'selected' : ''}`}
+                    onClick={() => handleMotifSelect(motif.id)}
+                    title={motif.name}
+                  >
+                    {motif.imageData && (
+                      <img
+                        src={motif.imageData}
+                        alt={motif.name}
+                        style={{ width: '30px', height: '30px', objectFit: 'contain' }}
+                      />
+                    )}
+                    <span className="motif-compact-name">{motif.name}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="no-motifs-compact">Ingen motiver plassert på {currentSide === 'front' ? 'forsiden' : 'baksiden'}</p>
+            )}
+          </div>
+
           <div className="upload-section">
             <h4>Egne motiver</h4>
 
