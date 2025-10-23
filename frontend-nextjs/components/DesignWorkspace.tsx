@@ -56,6 +56,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   // Touch/pinch zoom state
   const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
   const [initialPinchZoom, setInitialPinchZoom] = useState<number>(1.25);
+
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [showMobileMotifPanel, setShowMobileMotifPanel] = useState<boolean>(false);
+  const [showMobileControlPanel, setShowMobileControlPanel] = useState<boolean>(false);
+
   const [manualFillMode, setManualFillMode] = useState<boolean>(false);
   const [manualFillCells, setManualFillCells] = useState<{front: Map<string, string>, back: Map<string, string>}>({
     front: new Map<string, string>(),
@@ -455,6 +461,20 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     };
   }, [placedMotifs, backSideMotifs, currentSide, stitchInterpretation, gridWidth, gridHeight, manualFillCells]);
 
+  // Mobile detection with resize listener
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Check on mount
+    checkMobile();
+
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -751,9 +771,18 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   };
 
   const renderGrid = (side: 'front' | 'back', pattern: any, motifs: PlacedMotif[]) => {
-    // Auto-calculate cell size to fit both grids in available width
-    // Assuming ~50% of screen width is available for center panel with 2 grids
-    const cellSize = Math.max(8, Math.min(25, 600 / gridWidth));
+    // Auto-calculate cell size to fit screen
+    // On mobile: use most of viewport width (90vw)
+    // On desktop: use available panel width
+    let cellSize: number;
+    if (isMobile) {
+      // Calculate based on 90% of viewport width
+      const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
+      cellSize = Math.max(8, Math.min(25, (viewportWidth * 0.9 - 20) / gridWidth));
+    } else {
+      // Desktop: ~50% of screen width for center panel with 2 grids
+      cellSize = Math.max(8, Math.min(25, 600 / gridWidth));
+    }
     const padding = Math.max(4, Math.round(cellSize * 0.15));
 
     return (
@@ -1475,21 +1504,31 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         </div>
       </header>
 
-      <div
-        className="workspace-content"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `${leftPanelWidth}px 1rem 1fr 1rem ${rightPanelWidth}px`,
-          gap: '0',
-          padding: '1rem',
-          overflow: 'hidden'
-        }}
-      >
-        <aside
-          className="motif-panel"
-          style={{ width: `${leftPanelWidth}px`, minWidth: `${leftPanelWidth}px` }}
-        >
-          <h3>Motivbibliotek - TEST DEPLOY</h3>
+      {/* Mobile Layout */}
+      {isMobile ? (
+        <div className="workspace-content-mobile" style={{ display: 'flex', flexDirection: 'column', padding: '0.5rem', gap: '0.5rem' }}>
+          {/* Mobile Toggle Buttons */}
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <button
+              className="btn btn-small btn-secondary"
+              onClick={() => setShowMobileMotifPanel(!showMobileMotifPanel)}
+              style={{ flex: 1 }}
+            >
+              {showMobileMotifPanel ? 'Skjul' : 'Vis'} Motiver
+            </button>
+            <button
+              className="btn btn-small btn-secondary"
+              onClick={() => setShowMobileControlPanel(!showMobileControlPanel)}
+              style={{ flex: 1 }}
+            >
+              {showMobileControlPanel ? 'Skjul' : 'Vis'} Kontroller
+            </button>
+          </div>
+
+          {/* Mobile Motif Panel (Collapsible) */}
+          {showMobileMotifPanel && (
+            <aside className="motif-panel mobile-panel" style={{ width: '100%', maxHeight: '50vh', overflow: 'auto' }}>
+              <h3>Motivbibliotek</h3>
 
           {customMotifs.length > 0 && (
             <>
