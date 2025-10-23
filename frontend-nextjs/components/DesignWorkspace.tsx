@@ -1506,97 +1506,133 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         </div>
       </header>
 
-      {/* Mobile Layout */}
+      {/* Mobile Layout - New Mockup Design */}
       {isMobile ? (
-        <div className="workspace-content-mobile" style={{ display: 'flex', flexDirection: 'column', padding: '0.5rem', gap: '0.5rem' }}>
-          {/* Mobile Toggle Buttons */}
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <button
-              className="btn btn-small btn-secondary"
-              onClick={() => setShowMobileMotifPanel(!showMobileMotifPanel)}
-              style={{ flex: 1 }}
-            >
-              {showMobileMotifPanel ? 'Skjul' : 'Vis'} Motiver
-            </button>
-            <button
-              className="btn btn-small btn-secondary"
-              onClick={() => setShowMobileControlPanel(!showMobileControlPanel)}
-              style={{ flex: 1 }}
-            >
-              {showMobileControlPanel ? 'Skjul' : 'Vis'} Kontroller
+        <div className="mobile-design-workspace">
+          {/* Mobile Header: Project name + dimensions + Revider button */}
+          <div className="mobile-header-row">
+            <div className="mobile-project-info">
+              <span className="mobile-project-name">{project.name}</span>
+              <span className="mobile-project-dims">Mål: {project.width} *{project.height} cm</span>
+            </div>
+            <button className="btn-mobile-green">
+              Revider størrelse
             </button>
           </div>
 
-          {/* Mobile Motif Panel (Collapsible) */}
-          {showMobileMotifPanel && (
-            <aside className="motif-panel mobile-panel" style={{ width: '100%', maxHeight: '50vh', overflow: 'auto' }}>
-              <h3>Motivbibliotek</h3>
+          {/* Garn (Color picker) row */}
+          <div className="mobile-control-row">
+            <label>Garn:</label>
+            <div className="mobile-color-circles">
+              <div className="color-circle" style={{ background: '#B4BA8F' }}></div>
+              <div className="color-circle" style={{ background: '#FFFFFF', border: '2px solid #ddd' }}></div>
+              <div className="color-circle selected" style={{ background: '#8B4513' }}></div>
+              <div className="color-circle" style={{ background: '#654321' }}></div>
+            </div>
+          </div>
 
-          {customMotifs.length > 0 && (
-            <>
-              <div className="category-selector">
-                <label htmlFor="category-select">Kategori:</label>
-                <select
-                  id="category-select"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="category-dropdown"
-                >
-                  <option value="all">Alle motiver</option>
-                  <option value="sea">Hav</option>
-                  <option value="birds">Fugler</option>
-                  <option value="flowers">Blomster</option>
-                  <option value="sport">Sport</option>
-                  <option value="other">Andre</option>
-                </select>
-              </div>
+          {/* Bord + Invertér row */}
+          <div className="mobile-control-row">
+            <div className="mobile-row-group">
+              <label>Bord:</label>
+              <button className="btn-mobile-green">Celtic weave</button>
+            </div>
+            <button className="btn-mobile-green">Invertér</button>
+          </div>
 
-              <div className="motif-grid">
-                {customMotifs
-                  .filter(motif => motif.category !== 'text' && (selectedCategory === 'all' || motif.category === selectedCategory))
-                  .map((customMotif) => (
-                    <div
-                      key={customMotif.id}
-                      className={`motif-item ${selectedMotifType === customMotif.id ? 'selected' : ''}`}
-                      onClick={() => handleMotifClick(customMotif.id, customMotif.name)}
-                      title={customMotif.name}
-                    >
-                      <div className="motif-preview custom-motif">
-                        <img
-                          src={customMotif.imageData}
-                          alt={customMotif.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                        />
-                      </div>
+          {/* Forside/Bakside Toggle */}
+          <div className="mobile-side-toggle">
+            <button
+              className={`btn-mobile-toggle ${currentSide === 'front' ? 'active' : ''}`}
+              onClick={() => setCurrentSide('front')}
+            >
+              Forside
+            </button>
+            <button
+              className={`btn-mobile-toggle ${currentSide === 'back' ? 'active' : ''}`}
+              onClick={() => setCurrentSide('back')}
+            >
+              Bakside
+            </button>
+          </div>
+
+          {/* Single Grid View */}
+          <div className="mobile-grid-container">
+            {currentSide === 'front' ? (
+              generatedPattern && renderGrid('front', generatedPattern, placedMotifs)
+            ) : (
+              backSidePattern && renderGrid('back', backSidePattern, backSideMotifs)
+            )}
+          </div>
+
+          {/* Motif Section */}
+          <div className="mobile-motif-section">
+            <div className="mobile-section-header">
+              <span>Motiver</span>
+            </div>
+
+            <div className="mobile-category-row">
+              <label>Kategori:</label>
+              <button
+                className="btn-mobile-category"
+                onClick={() => {
+                  const categories = ['all', 'flowers', 'sea', 'birds', 'sport', 'other'];
+                  const currentIndex = categories.indexOf(selectedCategory);
+                  const nextIndex = (currentIndex + 1) % categories.length;
+                  setSelectedCategory(categories[nextIndex]);
+                }}
+              >
+                {selectedCategory === 'flowers' ? 'Blomster' :
+                 selectedCategory === 'sea' ? 'Hav' :
+                 selectedCategory === 'birds' ? 'Fugler' :
+                 selectedCategory === 'sport' ? 'Sport' :
+                 selectedCategory === 'other' ? 'Andre' : 'Alle motiver'}
+              </button>
+            </div>
+
+            {/* Motif Grid */}
+            <div className="mobile-motif-grid">
+              {customMotifs
+                .filter(motif => motif.category !== 'text' && (selectedCategory === 'all' || motif.category === selectedCategory))
+                .map((customMotif) => (
+                  <div
+                    key={customMotif.id}
+                    className={`motif-item ${selectedMotifType === customMotif.id ? 'selected' : ''}`}
+                    onClick={() => handleMotifClick(customMotif.id, customMotif.name)}
+                    title={customMotif.name}
+                  >
+                    <div className="motif-preview custom-motif">
+                      <img
+                        src={customMotif.imageData}
+                        alt={customMotif.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
                     </div>
-                  ))}
-              </div>
-            </>
-          )}
+                  </div>
+                ))}
+            </div>
 
-          <div className="upload-section">
-            <h4>Egne motiver</h4>
-
-            <div className="motif-creation-buttons">
+            {/* Upload and Text Buttons */}
+            <div className="mobile-action-buttons">
+              <button
+                className="btn-mobile-green"
+                onClick={() => setShowTextInput(!showTextInput)}
+              >
+                Legg til tekst
+              </button>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
                 style={{ display: 'none' }}
-                id="motif-upload"
+                id="motif-upload-mobile"
               />
-              <label htmlFor="motif-upload" className="upload-button">
-                Last opp bilde
+              <label htmlFor="motif-upload-mobile" className="btn-mobile-green">
+                Last opp motiv
               </label>
-
-              <button
-                className="upload-button text-button"
-                onClick={() => setShowTextInput(!showTextInput)}
-              >
-                Legg til tekst
-              </button>
             </div>
 
+            {/* Text input (if shown) */}
             {showTextInput && (
               <div className="text-input-section">
                 <input
@@ -1636,93 +1672,25 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 </div>
               </div>
             )}
-
-            {/* Text Motifs Display */}
-            {customMotifs.filter(m => m.category === 'text').length > 0 && (
-              <div className="text-motifs-list">
-                <div className="motif-grid">
-                  {customMotifs
-                    .filter(motif => motif.category === 'text')
-                    .map((customMotif) => (
-                      <div
-                        key={customMotif.id}
-                        className={`motif-item ${selectedMotifType === customMotif.id ? 'selected' : ''}`}
-                        onClick={() => handleMotifClick(customMotif.id, customMotif.name)}
-                        title={customMotif.name}
-                      >
-                        <div className="motif-preview custom-motif">
-                          <img
-                            src={customMotif.imageData}
-                            alt={customMotif.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            )}
           </div>
 
-          <div className="manual-fill-section">
-            <h4>Manuelt fylleverktøy</h4>
-            <p className="tool-description">Klikk på rutenettceller for å fylle eller tømme dem manuelt</p>
-
-            <div className="manual-fill-controls">
-              <button
-                className={`btn ${manualFillMode ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => setManualFillMode(!manualFillMode)}
-                title={manualFillMode ? "Avslutt manuell fyllmodus" : "Start manuell fyllmodus"}
-              >
-                {manualFillMode ? 'Avslutt fyllmodus' : 'Start fyllmodus'}
-              </button>
-
-              {manualFillMode && (
-                <div className="fill-mode-info">
-                  <div className="tool-mode-selector">
-                    <button
-                      className={`btn btn-small ${manualToolMode === 'fill' ? 'btn-primary' : 'btn-outline'}`}
-                      onClick={() => setManualToolMode('fill')}
-                      title="Fyll tomme celler"
-                    >
-                      Fyll
-                    </button>
-                    <button
-                      className={`btn btn-small ${manualToolMode === 'clear' ? 'btn-primary' : 'btn-outline'}`}
-                      onClick={() => setManualToolMode('clear')}
-                      title="Tøm fylte celler"
-                    >
-                      Tøm
-                    </button>
-                  </div>
-                  <p><small>{manualToolMode === 'fill' ? 'Klikk for å fylle celler' : 'Klikk for å tømme celler'}</small></p>
-                </div>
-              )}
-            </div>
-
-            <div className="manual-fill-actions">
-              <button
-                className="btn btn-small btn-outline"
-                onClick={() => clearManualFills(currentSide)}
-                disabled={getCurrentManualFills().size === 0}
-                title={`Tøm manuelle fyllinger for ${currentSide === 'front' ? 'forside' : 'bakside'}`}
-              >
-                Tøm {currentSide === 'front' ? 'forside' : 'bakside'}
-              </button>
-
-              <button
-                className="btn btn-small btn-outline"
-                onClick={() => clearManualFills()}
-                disabled={manualFillCells.front.size === 0 && manualFillCells.back.size === 0}
-                title="Tøm alle manuelle fyllinger"
-              >
-                Tøm alle
-              </button>
-            </div>
+          {/* Bottom Action Buttons */}
+          <div className="mobile-bottom-buttons">
+            <button
+              className="btn btn-outline"
+              onClick={handleGeneratePattern}
+              disabled={autoUpdating}
+            >
+              {autoUpdating ? 'Genererer...' : 'Generer mønster'}
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={handleExportPattern}
+              disabled={!generatedPattern && !backSidePattern}
+            >
+              Eksporter oppskrift
+            </button>
           </div>
-
-        </aside>
-          )}
         </div>
       ) : (
         <div className="workspace-content">
