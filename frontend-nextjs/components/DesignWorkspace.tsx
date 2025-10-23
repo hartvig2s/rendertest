@@ -774,15 +774,17 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     // Auto-calculate cell size to fit screen
     // On mobile: use most of viewport width (90vw)
     // On desktop: use available panel width
-    let cellSize: number;
+    let baseCellSize: number;
     if (isMobile) {
       // Calculate based on 90% of viewport width
       const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
-      cellSize = Math.max(8, Math.min(25, (viewportWidth * 0.9 - 20) / gridWidth));
+      baseCellSize = Math.max(8, Math.min(25, (viewportWidth * 0.9 - 20) / gridWidth));
     } else {
       // Desktop: ~50% of screen width for center panel with 2 grids
-      cellSize = Math.max(8, Math.min(25, 600 / gridWidth));
+      baseCellSize = Math.max(8, Math.min(25, 600 / gridWidth));
     }
+    // Apply zoom multiplier to cell size
+    const cellSize = baseCellSize * gridZoom;
     const padding = Math.max(4, Math.round(cellSize * 0.15));
 
     return (
@@ -1572,34 +1574,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             </>
           )}
 
-          {/* Placed Motifs Section - moved below library */}
-          <div className="placed-motifs-library-section">
-            <h4>Plasserte motiver</h4>
-            {getCurrentMotifs().length > 0 ? (
-              <div className="placed-motifs-compact-list">
-                {getCurrentMotifs().map((motif) => (
-                  <div
-                    key={motif.id}
-                    className={`placed-motif-compact-item ${selectedMotifId === motif.id ? 'selected' : ''}`}
-                    onClick={() => handleMotifSelect(motif.id)}
-                    title={motif.name}
-                  >
-                    {motif.imageData && (
-                      <img
-                        src={motif.imageData}
-                        alt={motif.name}
-                        style={{ width: '30px', height: '30px', objectFit: 'contain' }}
-                      />
-                    )}
-                    <span className="motif-compact-name">{motif.name}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="no-motifs-compact">Ingen motiver plassert på {currentSide === 'front' ? 'forsiden' : 'baksiden'}</p>
-            )}
-          </div>
-
           <div className="upload-section">
             <h4>Egne motiver</h4>
 
@@ -1800,34 +1774,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               </div>
             </>
           )}
-
-          {/* Placed Motifs Section */}
-          <div className="placed-motifs-library-section">
-            <h4>Plasserte motiver</h4>
-            {getCurrentMotifs().length > 0 ? (
-              <div className="placed-motifs-compact-list">
-                {getCurrentMotifs().map((motif) => (
-                  <div
-                    key={motif.id}
-                    className={`placed-motif-compact-item ${selectedMotifId === motif.id ? 'selected' : ''}`}
-                    onClick={() => handleMotifSelect(motif.id)}
-                    title={motif.name}
-                  >
-                    {motif.imageData && (
-                      <img
-                        src={motif.imageData}
-                        alt={motif.name}
-                        style={{ width: '30px', height: '30px', objectFit: 'contain' }}
-                      />
-                    )}
-                    <span className="motif-compact-name">{motif.name}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="no-motifs-compact">Ingen motiver plassert på {currentSide === 'front' ? 'forsiden' : 'baksiden'}</p>
-            )}
-          </div>
 
           <div className="upload-section">
             <h4>Egne motiver</h4>
