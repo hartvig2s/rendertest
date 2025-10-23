@@ -2493,9 +2493,51 @@ button, .btn {
 
 /* Mobile: 375px to 767px */
 @media (max-width: 767px) {
-  /* Prevent horizontal scrolling */
-  body {
+  /* Prevent horizontal scrolling and default touch behaviors */
+  html, body {
     overflow-x: hidden;
+    touch-action: pan-y pinch-zoom;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Grid container mobile touch optimization */
+  .crochet-grid-container {
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Interactive cells - ensure touch targets are large enough */
+  .crochet-cell {
+    min-width: 12px !important;
+    min-height: 12px !important;
+    touch-action: none;
+  }
+
+  .crochet-cell.has-motif {
+    /* Make motif cells more touch-friendly */
+    cursor: grab;
+    -webkit-tap-highlight-color: rgba(52, 152, 219, 0.3);
+  }
+
+  .crochet-cell.has-motif:active {
+    cursor: grabbing;
+  }
+
+  /* Grid scaling for mobile viewport */
+  .crochet-grid {
+    max-width: calc(100vw - 2rem);
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  /* Improve touch scrolling for panels */
+  .motif-panel,
+  .controls-panel {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   .app {

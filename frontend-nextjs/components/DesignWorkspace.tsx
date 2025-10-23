@@ -52,6 +52,10 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [backSideMotifs, setBackSideMotifs] = useState<PlacedMotif[]>([]);
   const [backSidePattern, setBackSidePattern] = useState<any>(null);
   const [dragOverSide, setDragOverSide] = useState<'front' | 'back' | null>(null);
+
+  // Touch/pinch zoom state
+  const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
+  const [initialPinchZoom, setInitialPinchZoom] = useState<number>(1.25);
   const [manualFillMode, setManualFillMode] = useState<boolean>(false);
   const [manualFillCells, setManualFillCells] = useState<{front: Map<string, string>, back: Map<string, string>}>({
     front: new Map<string, string>(),
@@ -572,6 +576,92 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
       setGridZoom(prev => Math.max(0.5, Math.min(3.0, prev + delta)));
+    }
+  };
+
+  // Touch event handlers for mobile
+  const handleGridTouchStart = (e: React.TouchEvent) => {
+    // Handle pinch-to-zoom
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const distance = Math.hypot(
+        e.touches[0].pageX - e.touches[1].pageX,
+        e.touches[0].pageY - e.touches[1].pageY
+      );
+      setInitialPinchDistance(distance);
+      setInitialPinchZoom(gridZoom);
+    }
+    // Handle single touch for motif selection
+    else if (e.touches.length === 1 && !manualFillMode) {
+      const touch = e.touches[0];
+      const target = e.target as HTMLElement;
+
+      // Check if we're touching a cell with a motif
+      if (target.classList.contains('has-motif')) {
+        // Extract grid coordinates from the cell
+        const cellIndex = Array.from(target.parentElement?.children || []).indexOf(target);
+        if (cellIndex >= 0) {
+          const colIndex = cellIndex % gridWidth;
+          const rowIndex = Math.floor(cellIndex / gridWidth);
+
+          const side = currentSide;
+          const motifs = side === 'front' ? placedMotifs : backSideMotifs;
+
+          // Find motif at this position
+          const motifsAtPosition = motifs.filter(motif => {
+            const motifGridX = Math.round((motif.x / 100) * gridWidth);
+            const motifGridY = Math.round((motif.y / 100) * gridHeight);
+            const motifRadius = Math.max(2, Math.round(motif.size * 3));
+            return Math.abs(motifGridX - colIndex) <= motifRadius &&
+                   Math.abs(motifGridY - rowIndex) <= motifRadius;
+          });
+
+          if (motifsAtPosition.length > 0) {
+            setGridDragging(motifsAtPosition[0].id);
+          }
+        }
+      }
+    }
+  };
+
+  const handleGridTouchMove = (e: React.TouchEvent) => {
+    // Handle pinch-to-zoom
+    if (e.touches.length === 2 && initialPinchDistance !== null) {
+      e.preventDefault();
+      const distance = Math.hypot(
+        e.touches[0].pageX - e.touches[1].pageX,
+        e.touches[0].pageY - e.touches[1].pageY
+      );
+      const scale = distance / initialPinchDistance;
+      const newZoom = initialPinchZoom * scale;
+      setGridZoom(Math.max(0.5, Math.min(3.0, newZoom)));
+    }
+    // Handle single touch for motif dragging
+    else if (e.touches.length === 1 && gridDragging) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement;
+
+      if (target && target.classList.contains('crochet-cell')) {
+        const cellIndex = Array.from(target.parentElement?.children || []).indexOf(target);
+        if (cellIndex >= 0) {
+          const colIndex = cellIndex % gridWidth;
+          const rowIndex = Math.floor(cellIndex / gridWidth);
+          handleGridMotifDrag(colIndex, rowIndex);
+        }
+      }
+    }
+  };
+
+  const handleGridTouchEnd = (e: React.TouchEvent) => {
+    // Reset pinch zoom state
+    if (e.touches.length < 2) {
+      setInitialPinchDistance(null);
+    }
+
+    // Reset drag state
+    if (e.touches.length === 0) {
+      handleGridMotifDragEnd();
     }
   };
 
@@ -1399,7 +1489,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           className="motif-panel"
           style={{ width: `${leftPanelWidth}px`, minWidth: `${leftPanelWidth}px` }}
         >
-          <h3>Motivbibliotek</h3>
+          <h3>Motivbibliotek - TEST DEPLOY</h3>
 
           {customMotifs.length > 0 && (
             <>
@@ -1749,11 +1839,15 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       onDragOver={handleGridDragOver}
                       onDragEnter={(e) => handleGridDragEnter(e, 'front')}
                       onDragLeave={handleGridDragLeave}
+                      onTouchStart={handleGridTouchStart}
+                      onTouchMove={handleGridTouchMove}
+                      onTouchEnd={handleGridTouchEnd}
                       style={{
                         border: currentSide === 'front' ? '3px solid #3498db' : '2px solid #ccc',
                         borderRadius: '4px',
                         background: dragOverSide === 'front' ? '#e8f5e8' : '#f5f5f5',
-                        cursor: selectedMotifType && currentSide === 'front' ? 'crosshair' : 'default'
+                        cursor: selectedMotifType && currentSide === 'front' ? 'crosshair' : 'default',
+                        touchAction: 'none'
                       }}
                     >
                       {generatedPattern && renderGrid('front', generatedPattern, placedMotifs)}
@@ -1779,11 +1873,15 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       onDragOver={handleGridDragOver}
                       onDragEnter={(e) => handleGridDragEnter(e, 'back')}
                       onDragLeave={handleGridDragLeave}
+                      onTouchStart={handleGridTouchStart}
+                      onTouchMove={handleGridTouchMove}
+                      onTouchEnd={handleGridTouchEnd}
                       style={{
                         border: currentSide === 'back' ? '3px solid #3498db' : '2px solid #ccc',
                         borderRadius: '4px',
                         background: dragOverSide === 'back' ? '#e8f5e8' : '#f5f5f5',
-                        cursor: selectedMotifType && currentSide === 'back' ? 'crosshair' : 'default'
+                        cursor: selectedMotifType && currentSide === 'back' ? 'crosshair' : 'default',
+                        touchAction: 'none'
                       }}
                     >
                       {backSidePattern && renderGrid('back', backSidePattern, backSideMotifs)}
