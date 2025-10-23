@@ -78,9 +78,9 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
   };
 
   return (
-    <div className="project-creation">
-      <div className="project-creation-modal">
-        <h2>Opprett Nytt Prosjekt</h2>
+    <div className="project-creation-page">
+      <div className="project-creation-card">
+        <h2>Nytt prosjekt</h2>
 
         {errors.length > 0 && (
           <div className="error-messages" data-testid="error-message">
@@ -92,58 +92,60 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="project-form">
-          <div className="form-group">
-            <label htmlFor="projectName">Prosjektnavn</label>
+        <form onSubmit={handleSubmit} className="project-form-new">
+          <div className="form-group-new">
+            <label htmlFor="projectName">Prosjektnavn:</label>
             <input
               id="projectName"
               name="projectName"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="f.eks., Min Første Veske"
+              placeholder="Demo"
               maxLength={100}
+              className="project-input"
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="width">Bredde (cm)</label>
-              <input
-                id="width"
-                name="width"
-                type="number"
-                max={200}
-                step={0.5}
-                value={widthCm}
-                onChange={(e) => setWidthCm(parseFloat(e.target.value) || 0)}
-              />
-              <small>8-200 cm (1 cm = 1 rute)</small>
+          <div className="form-row-new">
+            <div className="form-group-new">
+              <label htmlFor="width">Bredde:</label>
+              <div className="input-with-unit">
+                <input
+                  id="width"
+                  name="width"
+                  type="number"
+                  max={200}
+                  step={0.5}
+                  value={widthCm}
+                  onChange={(e) => setWidthCm(parseFloat(e.target.value) || 0)}
+                  className="dimension-input"
+                />
+                <span className="unit-label">cm</span>
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="height">Høyde (cm)</label>
-              <input
-                id="height"
-                name="height"
-                type="number"
-                max={180}
-                step={0.1}
-                value={heightCm}
-                onChange={(e) => setHeightCm(parseFloat(e.target.value) || 0)}
-              />
-              <small>7.2-180 cm (≈0.9 cm per rute)</small>
+            <div className="form-group-new">
+              <label htmlFor="height">Høyde:</label>
+              <div className="input-with-unit">
+                <input
+                  id="height"
+                  name="height"
+                  type="number"
+                  max={180}
+                  step={0.1}
+                  value={heightCm}
+                  onChange={(e) => setHeightCm(parseFloat(e.target.value) || 0)}
+                  className="dimension-input"
+                />
+                <span className="unit-label">cm</span>
+              </div>
             </div>
           </div>
 
-          <div className="form-actions">
-            <button type="button" onClick={onCancel} className="btn btn-secondary">
-              Avbryt
-            </button>
-            <button type="submit" className="btn btn-primary">
-              Opprett Prosjekt
-            </button>
-          </div>
+          <button type="submit" className="btn-create-project" style={{ display: 'none' }}>
+            Opprett
+          </button>
         </form>
       </div>
     </div>

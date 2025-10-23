@@ -41,61 +41,16 @@ export default function Home() {
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Heklemønster Designverktøy</h1>
-        <p>Lag egne mønster for heklevesker med filet-hekleteknikk</p>
-      </header>
-
-      <main className="app-main">
-        <div className="welcome-screen">
-          <div className="welcome-content">
-            <h2>Velkommen til Heklemønster Designverktøy</h2>
-            <p>
-              Design egne heklemønster for vesker med dra-og-slipp motiver,
-              automatisk mønsergenerering og garnberegninger.
-            </p>
-
-            <div className="quick-start">
-              <button className="btn btn-primary" data-testid="new-project" onClick={handleNewProject}>
-                Nytt Prosjekt
-              </button>
-              <button className="btn btn-secondary" data-testid="import-project">
-                Importer Prosjekt
-              </button>
-            </div>
-
-            <div className="features">
-              <div className="feature">
-                <h3>Designrutenett</h3>
-                <p>Egendefinerte dimensjoner 20-200cm med 1cm rutenett</p>
-              </div>
-              <div className="feature">
-                <h3>Dra & Slipp</h3>
-                <p>Plasser blomster, fugler, bokstaver og geometriske motiver</p>
-              </div>
-              <div className="feature">
-                <h3>Mønstergenerering</h3>
-                <p>Automatiske filet-heklediagrammer med maskinstruks</p>
-              </div>
-              <div className="feature">
-                <h3>Garnkalkulator</h3>
-                <p>Presise beregninger av garnbehov basert på mønserkompleksitet</p>
-              </div>
-              <div className="feature">
-                <h3>Eksportvalg</h3>
-                <p>PDF-mønster, PNG-bilder og JSON-prosjektfiler</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <footer className="app-footer">
-        <p>
-          Laget for hekleentusiaster • Bygget med React + TypeScript + Next.js
+    <div className="landing-page">
+      <div className="landing-content">
+        <h1 className="landing-title">Heklet</h1>
+        <p className="landing-subtitle">
+          Design din egen hekleveske - fargelegg, plasser motiver og skap din personlige oppskrift
         </p>
-      </footer>
+        <button className="btn-landing" data-testid="new-project" onClick={handleNewProject}>
+          Start designet ditt
+        </button>
+      </div>
     </div>
   )
 }
