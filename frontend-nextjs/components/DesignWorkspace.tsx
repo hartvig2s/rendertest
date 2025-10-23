@@ -1748,6 +1748,235 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           </div>
 
         </aside>
+          )}
+        </div>
+      ) : (
+        <div className="workspace-content">
+        {/* Left Panel - Motif Library */}
+        <aside
+          className="motif-panel"
+          style={{ width: `${leftPanelWidth}px`, minWidth: `${leftPanelWidth}px`, overflow: 'auto' }}
+        >
+          <h3>Motivbibliotek</h3>
+
+          {customMotifs.length > 0 && (
+            <>
+              <div className="category-selector">
+                <label htmlFor="category-select">Kategori:</label>
+                <select
+                  id="category-select"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="category-dropdown"
+                >
+                  <option value="all">Alle motiver</option>
+                  <option value="sea">Hav</option>
+                  <option value="birds">Fugler</option>
+                  <option value="flowers">Blomster</option>
+                  <option value="sport">Sport</option>
+                  <option value="other">Andre</option>
+                </select>
+              </div>
+
+              <div className="motif-grid">
+                {customMotifs
+                  .filter(motif => motif.category !== 'text' && (selectedCategory === 'all' || motif.category === selectedCategory))
+                  .map((customMotif) => (
+                    <div
+                      key={customMotif.id}
+                      className={`motif-item ${selectedMotifType === customMotif.id ? 'selected' : ''}`}
+                      onClick={() => handleMotifClick(customMotif.id, customMotif.name)}
+                      title={customMotif.name}
+                    >
+                      <div className="motif-preview custom-motif">
+                        <img
+                          src={customMotif.imageData}
+                          alt={customMotif.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </>
+          )}
+
+          {/* Placed Motifs Section */}
+          <div className="placed-motifs-library-section">
+            <h4>Plasserte motiver</h4>
+            {getCurrentMotifs().length > 0 ? (
+              <div className="placed-motifs-compact-list">
+                {getCurrentMotifs().map((motif) => (
+                  <div
+                    key={motif.id}
+                    className={`placed-motif-compact-item ${selectedMotifId === motif.id ? 'selected' : ''}`}
+                    onClick={() => handleMotifSelect(motif.id)}
+                    title={motif.name}
+                  >
+                    {motif.imageData && (
+                      <img
+                        src={motif.imageData}
+                        alt={motif.name}
+                        style={{ width: '30px', height: '30px', objectFit: 'contain' }}
+                      />
+                    )}
+                    <span className="motif-compact-name">{motif.name}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="no-motifs-compact">Ingen motiver plassert på {currentSide === 'front' ? 'forsiden' : 'baksiden'}</p>
+            )}
+          </div>
+
+          <div className="upload-section">
+            <h4>Egne motiver</h4>
+
+            <div className="motif-creation-buttons">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ display: 'none' }}
+                id="motif-upload"
+              />
+              <label htmlFor="motif-upload" className="upload-button">
+                Last opp bilde
+              </label>
+
+              <button
+                className="upload-button text-button"
+                onClick={() => setShowTextInput(!showTextInput)}
+              >
+                Legg til tekst
+              </button>
+            </div>
+
+            {showTextInput && (
+              <div className="text-input-section">
+                <input
+                  type="text"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  placeholder="Skriv inn tekst for motiv..."
+                  className="text-input"
+                  maxLength={50}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && textInput.trim()) {
+                      createTextMotif(textInput);
+                    }
+                    if (e.key === 'Escape') {
+                      setShowTextInput(false);
+                      setTextInput('');
+                    }
+                  }}
+                />
+                <div className="text-input-actions">
+                  <button
+                    className="btn btn-small btn-primary"
+                    onClick={() => createTextMotif(textInput)}
+                    disabled={!textInput.trim()}
+                  >
+                    Opprett
+                  </button>
+                  <button
+                    className="btn btn-small btn-secondary"
+                    onClick={() => {
+                      setShowTextInput(false);
+                      setTextInput('');
+                    }}
+                  >
+                    Avbryt
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Text Motifs Display */}
+            {customMotifs.filter(m => m.category === 'text').length > 0 && (
+              <div className="text-motifs-list">
+                <div className="motif-grid">
+                  {customMotifs
+                    .filter(motif => motif.category === 'text')
+                    .map((customMotif) => (
+                      <div
+                        key={customMotif.id}
+                        className={`motif-item ${selectedMotifType === customMotif.id ? 'selected' : ''}`}
+                        onClick={() => handleMotifClick(customMotif.id, customMotif.name)}
+                        title={customMotif.name}
+                      >
+                        <div className="motif-preview custom-motif">
+                          <img
+                            src={customMotif.imageData}
+                            alt={customMotif.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="manual-fill-section">
+            <h4>Manuelt fylleverktøy</h4>
+            <p className="tool-description">Klikk på rutenettceller for å fylle eller tømme dem manuelt</p>
+
+            <div className="manual-fill-controls">
+              <button
+                className={`btn ${manualFillMode ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setManualFillMode(!manualFillMode)}
+                title={manualFillMode ? "Avslutt manuell fyllmodus" : "Start manuell fyllmodus"}
+              >
+                {manualFillMode ? 'Avslutt fyllmodus' : 'Start fyllmodus'}
+              </button>
+
+              {manualFillMode && (
+                <div className="fill-mode-info">
+                  <div className="tool-mode-selector">
+                    <button
+                      className={`btn btn-small ${manualToolMode === 'fill' ? 'btn-primary' : 'btn-outline'}`}
+                      onClick={() => setManualToolMode('fill')}
+                      title="Fyll tomme celler"
+                    >
+                      Fyll
+                    </button>
+                    <button
+                      className={`btn btn-small ${manualToolMode === 'clear' ? 'btn-primary' : 'btn-outline'}`}
+                      onClick={() => setManualToolMode('clear')}
+                      title="Tøm fylte celler"
+                    >
+                      Tøm
+                    </button>
+                  </div>
+                  <p><small>{manualToolMode === 'fill' ? 'Klikk for å fylle celler' : 'Klikk for å tømme celler'}</small></p>
+                </div>
+              )}
+            </div>
+
+            <div className="manual-fill-actions">
+              <button
+                className="btn btn-small btn-outline"
+                onClick={() => clearManualFills(currentSide)}
+                disabled={getCurrentManualFills().size === 0}
+                title={`Tøm manuelle fyllinger for ${currentSide === 'front' ? 'forside' : 'bakside'}`}
+              >
+                Tøm {currentSide === 'front' ? 'forside' : 'bakside'}
+              </button>
+
+              <button
+                className="btn btn-small btn-outline"
+                onClick={() => clearManualFills()}
+                disabled={manualFillCells.front.size === 0 && manualFillCells.back.size === 0}
+                title="Tøm alle manuelle fyllinger"
+              >
+                Tøm alle
+              </button>
+            </div>
+          </div>
+
+        </aside>
 
         {/* Left resize handle */}
         <div
@@ -1854,6 +2083,38 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     >
                       Invertér
                     </button>
+                  </div>
+
+                  <div className="grid-zoom-section">
+                    <label>Zoom: {(gridZoom * 100).toFixed(0)}%</label>
+                    <div className="zoom-slider-container">
+                      <button
+                        className="btn btn-small btn-secondary"
+                        onClick={() => setGridZoom(prev => Math.max(0.5, prev - 0.1))}
+                        disabled={gridZoom <= 0.5}
+                        title="Zoom ut"
+                      >
+                        −
+                      </button>
+                      <input
+                        type="range"
+                        min="0.5"
+                        max="3.0"
+                        step="0.1"
+                        value={gridZoom}
+                        onChange={(e) => setGridZoom(parseFloat(e.target.value))}
+                        className="zoom-slider"
+                        title={`Zoom: ${(gridZoom * 100).toFixed(0)}%`}
+                      />
+                      <button
+                        className="btn btn-small btn-secondary"
+                        onClick={() => setGridZoom(prev => Math.min(3.0, prev + 0.1))}
+                        disabled={gridZoom >= 3.0}
+                        title="Zoom inn"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
 
                 </div>
@@ -2104,6 +2365,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         </aside>
 
       </div>
+      )}
     </div>
   );
 };
