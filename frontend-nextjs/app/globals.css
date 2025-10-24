@@ -3363,6 +3363,12 @@ button, .btn {
   overflow-x: auto;
   display: flex;
   justify-content: center;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.mobile-grid-container .crochet-grid {
+  max-width: 100%;
 }
 
 .mobile-motif-section {

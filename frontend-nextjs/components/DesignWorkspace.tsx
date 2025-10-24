@@ -776,15 +776,18 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     // On desktop: use available panel width
     let baseCellSize: number;
     if (isMobile) {
-      // Calculate based on 90% of viewport width
+      // Calculate based on 90% of viewport width, accounting for padding
       const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
-      baseCellSize = Math.max(8, Math.min(25, (viewportWidth * 0.9 - 20) / gridWidth));
+      const containerWidth = viewportWidth * 0.9; // Account for mobile-grid-container padding
+      const paddingSpace = 40; // Estimate for container and grid padding
+      baseCellSize = Math.max(8, Math.min(25, (containerWidth - paddingSpace) / gridWidth));
     } else {
       // Desktop: ~50% of screen width for center panel with 2 grids
       baseCellSize = Math.max(8, Math.min(25, 600 / gridWidth));
     }
-    // Apply zoom multiplier to cell size
-    const cellSize = baseCellSize * gridZoom;
+    // Apply zoom multiplier to cell size (but limit zoom on mobile to prevent overflow)
+    const effectiveZoom = isMobile ? Math.min(gridZoom, 1.5) : gridZoom;
+    const cellSize = baseCellSize * effectiveZoom;
     const padding = Math.max(4, Math.round(cellSize * 0.15));
 
     return (
@@ -1515,7 +1518,25 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               <span className="mobile-project-name">{project.name}</span>
               <span className="mobile-project-dims">Mål: {project.width} *{project.height} cm</span>
             </div>
-            <button className="btn-mobile-green">
+            <button
+              className="btn-mobile-green"
+              onClick={() => {
+                const newWidthCm = prompt('Bredde (cm):', (gridWidth * 1.0).toFixed(1));
+                const newHeightCm = prompt('Høyde (cm):', (gridHeight * 0.9).toFixed(1));
+                if (newWidthCm && newHeightCm) {
+                  const widthCm = parseFloat(newWidthCm);
+                  const heightCm = parseFloat(newHeightCm);
+                  if (!isNaN(widthCm) && !isNaN(heightCm) && widthCm >= 8 && widthCm <= 200 && heightCm >= 7.2 && heightCm <= 180) {
+                    const newWidth = Math.round(widthCm / 1.0);
+                    const newHeight = Math.round(heightCm / 0.9);
+                    setGridWidth(newWidth);
+                    setGridHeight(newHeight);
+                  } else {
+                    alert('Bredde må være mellom 8 og 200 cm, høyde må være mellom 7.2 og 180 cm');
+                  }
+                }
+              }}
+            >
               Revider størrelse
             </button>
           </div>
@@ -1524,10 +1545,26 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           <div className="mobile-control-row">
             <label>Garn:</label>
             <div className="mobile-color-circles">
-              <div className="color-circle" style={{ background: '#B4BA8F' }}></div>
-              <div className="color-circle" style={{ background: '#FFFFFF', border: '2px solid #ddd' }}></div>
-              <div className="color-circle selected" style={{ background: '#8B4513' }}></div>
-              <div className="color-circle" style={{ background: '#654321' }}></div>
+              <div
+                className={`color-circle ${fillColor === 'green' ? 'selected' : ''}`}
+                style={{ background: '#B4BA8F' }}
+                onClick={() => updateFillColor('green')}
+              ></div>
+              <div
+                className={`color-circle ${fillColor === 'white' ? 'selected' : ''}`}
+                style={{ background: '#FFFFFF', border: '2px solid #ddd' }}
+                onClick={() => updateFillColor('white')}
+              ></div>
+              <div
+                className={`color-circle ${fillColor === 'red' ? 'selected' : ''}`}
+                style={{ background: '#8B4513' }}
+                onClick={() => updateFillColor('red')}
+              ></div>
+              <div
+                className={`color-circle ${fillColor === 'blue' ? 'selected' : ''}`}
+                style={{ background: '#654321' }}
+                onClick={() => updateFillColor('blue')}
+              ></div>
             </div>
           </div>
 
@@ -1535,9 +1572,28 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           <div className="mobile-control-row">
             <div className="mobile-row-group">
               <label>Bord:</label>
-              <button className="btn-mobile-green">Celtic weave</button>
+              <button
+                className="btn-mobile-green"
+                onClick={() => {
+                  const patterns = ['none', 'border-1', 'border-2', 'corner-triangles', 'checkerboard-edges', 'snake-pattern', 'stepped-border', 'checkerboard-2row'] as const;
+                  const currentIndex = patterns.indexOf(edgePattern);
+                  const nextIndex = (currentIndex + 1) % patterns.length;
+                  setEdgePattern(patterns[nextIndex]);
+                }}
+              >
+                {edgePattern === 'none' ? 'Ingen' :
+                 edgePattern === 'border-1' ? 'Enkel kant' :
+                 edgePattern === 'border-2' ? 'Dobbel kant' :
+                 edgePattern === 'corner-triangles' ? 'Hjørnetriangel' :
+                 edgePattern === 'checkerboard-edges' ? 'Sjakkmønster' :
+                 edgePattern === 'snake-pattern' ? 'Celtic weave' :
+                 edgePattern === 'stepped-border' ? 'Trappekant' :
+                 'Mini sjakk'}
+              </button>
             </div>
-            <button className="btn-mobile-green">Invertér</button>
+            <button className="btn-mobile-green" onClick={toggleStitchInterpretation}>
+              Invertér
+            </button>
           </div>
 
           {/* Forside/Bakside Toggle */}
