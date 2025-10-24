@@ -3458,3 +3458,51 @@ button, .btn {
     padding: 0.4rem 0.8rem;
   }
 }
+
+/* Project Creation Form Actions */
+.form-actions-new {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.btn-cancel-new,
+.btn-submit-new {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Recoleta', 'Playfair Display', Georgia, serif !important;
+}
+
+.btn-cancel-new {
+  background: transparent;
+  border: 2px solid #B4BA8F;
+  color: #B4BA8F;
+}
+
+.btn-cancel-new:hover {
+  background: #f0f0f0;
+}
+
+.btn-submit-new {
+  background: #B4BA8F;
+  color: #FFFBF5;
+  border: none;
+}
+
+.btn-submit-new:hover {
+  background: #9BA377;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(180, 186, 143, 0.3);
+}
+
+@media (max-width: 767px) {
+  .form-actions-new {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

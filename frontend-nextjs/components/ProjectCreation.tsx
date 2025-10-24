@@ -143,9 +143,14 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
             </div>
           </div>
 
-          <button type="submit" className="btn-create-project" style={{ display: 'none' }}>
-            Opprett
-          </button>
+          <div className="form-actions-new">
+            <button type="button" onClick={onCancel} className="btn-cancel-new">
+              Avbryt
+            </button>
+            <button type="submit" className="btn-submit-new">
+              Opprett prosjekt
+            </button>
+          </div>
         </form>
       </div>
     </div>
