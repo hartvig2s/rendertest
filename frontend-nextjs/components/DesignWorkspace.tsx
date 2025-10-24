@@ -1262,13 +1262,22 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   };
 
   const handleExportPattern = async () => {
+    console.log('🎯 Export button clicked!');
     const frontPattern = generatedPattern;
     const backPattern = backSidePattern;
 
+    console.log('Pattern check:', {
+      hasFrontPattern: !!frontPattern,
+      hasBackPattern: !!backPattern
+    });
+
     if (!frontPattern && !backPattern) {
+      console.log('❌ No pattern to export');
       alert('Ingen mønster å eksportere. Vennligst lag et design først.');
       return;
     }
+
+    console.log('✅ Starting PDF export...');
 
     // Calculate combined yarn requirements
     const totalYarnLength = (frontPattern?.yarnLength || 0) + (backPattern?.yarnLength || 0);
