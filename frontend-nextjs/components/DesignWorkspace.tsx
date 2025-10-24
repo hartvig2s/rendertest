@@ -1559,22 +1559,22 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             <div className="mobile-color-circles">
               <div
                 className={`color-circle ${fillColor === 'green' ? 'selected' : ''}`}
-                style={{ background: '#B4BA8F' }}
+                style={{ background: getColorValue('green') }}
                 onClick={() => updateFillColor('green')}
               ></div>
               <div
                 className={`color-circle ${fillColor === 'white' ? 'selected' : ''}`}
-                style={{ background: '#FFFFFF', border: '2px solid #ddd' }}
+                style={{ background: getColorValue('white'), border: '2px solid #ddd' }}
                 onClick={() => updateFillColor('white')}
               ></div>
               <div
                 className={`color-circle ${fillColor === 'red' ? 'selected' : ''}`}
-                style={{ background: '#8B4513' }}
+                style={{ background: getColorValue('red') }}
                 onClick={() => updateFillColor('red')}
               ></div>
               <div
                 className={`color-circle ${fillColor === 'blue' ? 'selected' : ''}`}
-                style={{ background: '#654321' }}
+                style={{ background: getColorValue('blue') }}
                 onClick={() => updateFillColor('blue')}
               ></div>
             </div>
