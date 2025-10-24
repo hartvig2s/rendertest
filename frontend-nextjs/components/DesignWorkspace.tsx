@@ -1741,28 +1741,30 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               </div>
             )}
 
-            {/* Display created text and uploaded motifs */}
-            {customMotifs.length > 0 && (
+            {/* Display created text and uploaded motifs (exclude library motifs) */}
+            {customMotifs.filter(m => !m.id.startsWith('library-')).length > 0 && (
               <div className="mobile-custom-motifs">
                 <h4 className="mobile-section-title">Mine motiver</h4>
                 <div className="mobile-motif-grid">
-                  {customMotifs.map((customMotif) => (
-                    <div
-                      key={customMotif.id}
-                      className={`motif-item ${selectedMotifType === customMotif.id ? 'selected' : ''}`}
-                      onClick={() => handleMotifClick(customMotif.id, customMotif.name)}
-                      title={customMotif.name}
-                    >
-                      <div className="motif-preview custom-motif">
-                        <img
-                          src={customMotif.imageData}
-                          alt={customMotif.name}
-                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                        />
+                  {customMotifs
+                    .filter(customMotif => !customMotif.id.startsWith('library-'))
+                    .map((customMotif) => (
+                      <div
+                        key={customMotif.id}
+                        className={`motif-item ${selectedMotifType === customMotif.id ? 'selected' : ''}`}
+                        onClick={() => handleMotifClick(customMotif.id, customMotif.name)}
+                        title={customMotif.name}
+                      >
+                        <div className="motif-preview custom-motif">
+                          <img
+                            src={customMotif.imageData}
+                            alt={customMotif.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                          />
+                        </div>
+                        <span className="motif-name">{customMotif.name}</span>
                       </div>
-                      <span className="motif-name">{customMotif.name}</span>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             )}
