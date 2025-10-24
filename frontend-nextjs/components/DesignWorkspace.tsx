@@ -62,6 +62,15 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [showMobileMotifPanel, setShowMobileMotifPanel] = useState<boolean>(false);
   const [showMobileControlPanel, setShowMobileControlPanel] = useState<boolean>(false);
 
+  // Mobile motif control
+  const [mobileSelectedMotif, setMobileSelectedMotif] = useState<string | null>(null);
+  const [showMotifControlModal, setShowMotifControlModal] = useState<boolean>(false);
+  const [isDraggingMotif, setIsDraggingMotif] = useState<boolean>(false);
+  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
+  const [touchStartPos, setTouchStartPos] = useState<{x: number, y: number} | null>(null);
+  const [isPinching, setIsPinching] = useState<boolean>(false);
+  const [initialPinchSize, setInitialPinchSize] = useState<number>(1);
+
   const [manualFillMode, setManualFillMode] = useState<boolean>(false);
   const [manualFillCells, setManualFillCells] = useState<{front: Map<string, string>, back: Map<string, string>}>({
     front: new Map<string, string>(),
@@ -992,6 +1001,130 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     setSelectedMotifId(selectedMotifId === motifId ? null : motifId);
   };
 
+  // Mobile motif touch handlers
+  const handleMotifTouchStart = (e: React.TouchEvent, motifId: string) => {
+    if (!isMobile) return;
+
+    // If already selected, start long-press timer for drag
+    if (mobileSelectedMotif === motifId && e.touches.length === 1) {
+      const touch = e.touches[0];
+      setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+
+      const timer = setTimeout(() => {
+        setIsDraggingMotif(true);
+        // Haptic feedback if available
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      }, 1000); // 1 second long press
+
+      setLongPressTimer(timer);
+    } else if (e.touches.length === 2) {
+      // Two fingers - pinch to resize
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      setInitialPinchDistance(distance);
+
+      const motif = getCurrentMotifs().find(m => m.id === motifId);
+      if (motif) {
+        setInitialPinchSize(motif.size);
+      }
+      setIsPinching(true);
+    }
+  };
+
+  const handleMotifTouchMove = (e: React.TouchEvent, motifId: string) => {
+    if (!isMobile) return;
+
+    // Handle pinch-to-resize
+    if (isPinching && e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const currentDistance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+
+      if (initialPinchDistance) {
+        const scale = currentDistance / initialPinchDistance;
+        const newSize = Math.max(0.1, Math.min(getMaxMotifSize(), initialPinchSize * scale));
+        handleMotifResize(motifId, newSize);
+      }
+      return;
+    }
+
+    // Handle drag
+    if (isDraggingMotif && touchStartPos && e.touches.length === 1) {
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - touchStartPos.x;
+      const deltaY = touch.clientY - touchStartPos.y;
+
+      // Cancel long-press if moved too much before timer finished
+      if (longPressTimer && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
+        clearTimeout(longPressTimer);
+        setLongPressTimer(null);
+      }
+
+      // Update motif position
+      const motif = getCurrentMotifs().find(m => m.id === motifId);
+      if (motif) {
+        // Convert pixel movement to percentage
+        const gridElement = e.currentTarget.closest('.crochet-grid');
+        if (gridElement) {
+          const gridRect = gridElement.getBoundingClientRect();
+          const deltaXPercent = (deltaX / gridRect.width) * 100;
+          const deltaYPercent = (deltaY / gridRect.height) * 100;
+
+          const newX = Math.max(-50, Math.min(150, motif.x + deltaXPercent));
+          const newY = Math.max(-50, Math.min(150, motif.y + deltaYPercent));
+
+          setCurrentMotifs(prev => prev.map(m =>
+            m.id === motifId ? { ...m, x: newX, y: newY } : m
+          ));
+
+          setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+        }
+      }
+    }
+  };
+
+  const handleMotifTouchEnd = (motifId: string) => {
+    if (!isMobile) return;
+
+    // Clear long-press timer
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+
+    // End drag mode
+    if (isDraggingMotif) {
+      setIsDraggingMotif(false);
+      // Regenerate pattern after drag
+      setTimeout(() => {
+        handleGeneratePattern();
+      }, 100);
+    }
+
+    // End pinch mode
+    if (isPinching) {
+      setIsPinching(false);
+      setInitialPinchDistance(null);
+    }
+
+    setTouchStartPos(null);
+
+    // If this was just a tap (not drag/pinch), select motif and show control
+    if (!isDraggingMotif && !isPinching) {
+      setMobileSelectedMotif(motifId);
+      setShowMotifControlModal(true);
+    }
+  };
+
   const handleCopyFrontToBack = () => {
     // Save current state before making changes
     saveToHistory();
@@ -1780,6 +1913,112 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               Eksporter oppskrift
             </button>
           </div>
+
+          {/* Mobile Motif Control Modal */}
+          {showMotifControlModal && mobileSelectedMotif && (() => {
+            const motif = getCurrentMotifs().find(m => m.id === mobileSelectedMotif);
+            if (!motif) return null;
+
+            return (
+              <div className="mobile-motif-modal-overlay" onClick={() => {
+                setShowMotifControlModal(false);
+                setMobileSelectedMotif(null);
+              }}>
+                <div className="mobile-motif-modal" onClick={(e) => e.stopPropagation()}>
+                  {/* Motif Preview */}
+                  <div className="mobile-motif-preview">
+                    {motif.isCustom && motif.imageData ? (
+                      <img src={motif.imageData} alt="Motif preview" />
+                    ) : (
+                      <div className="motif-placeholder">Motif</div>
+                    )}
+                  </div>
+
+                  {/* Size Slider */}
+                  <div className="mobile-control-group">
+                    <label>Størrelse: {(motif.size * 100).toFixed(0)}%</label>
+                    <input
+                      type="range"
+                      min="0.1"
+                      max={getMaxMotifSize()}
+                      step="0.05"
+                      value={motif.size}
+                      onChange={(e) => handleMotifResize(motif.id, parseFloat(e.target.value))}
+                      className="mobile-slider"
+                    />
+                  </div>
+
+                  {/* Balance/Threshold Slider */}
+                  <div className="mobile-control-group">
+                    <label>Balanse</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="230"
+                      step="5"
+                      value={motif.threshold}
+                      onChange={(e) => handleMotifThreshold(motif.id, parseInt(e.target.value))}
+                      className="mobile-slider"
+                    />
+                  </div>
+
+                  {/* Flip Buttons */}
+                  <div className="mobile-control-group">
+                    <label>Vend:</label>
+                    <div className="mobile-flip-buttons">
+                      <button
+                        className={`btn-mobile-flip ${motif.flipHorizontal ? 'active' : ''}`}
+                        onClick={() => handleMotifFlip(motif.id, 'horizontal')}
+                      >
+                        ↔ Horisontal
+                      </button>
+                      <button
+                        className={`btn-mobile-flip ${motif.flipVertical ? 'active' : ''}`}
+                        onClick={() => handleMotifFlip(motif.id, 'vertical')}
+                      >
+                        ↕ Vertikal
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="mobile-control-actions">
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        handleMotifDuplicate(motif.id);
+                        setShowMotifControlModal(false);
+                        setMobileSelectedMotif(null);
+                      }}
+                    >
+                      Dupliser
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => {
+                        handleMotifRemove(motif.id);
+                        setShowMotifControlModal(false);
+                        setMobileSelectedMotif(null);
+                      }}
+                    >
+                      Fjern
+                    </button>
+                  </div>
+
+                  {/* Close Button */}
+                  <button
+                    className="mobile-modal-close"
+                    onClick={() => {
+                      setShowMotifControlModal(false);
+                      setMobileSelectedMotif(null);
+                    }}
+                  >
+                    Ferdig
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       ) : (
         <div className="workspace-content">
