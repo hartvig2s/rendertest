@@ -1927,29 +1927,47 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             </button>
           </div>
 
-          {/* Mobile Motif Control Modal */}
+          {/* Mobile Motif Control Compact Panel */}
           {showMotifControlModal && mobileSelectedMotif && (() => {
             const motif = getCurrentMotifs().find(m => m.id === mobileSelectedMotif);
             if (!motif) return null;
 
             return (
-              <div className="mobile-motif-modal-overlay" onClick={() => {
-                setShowMotifControlModal(false);
-                setMobileSelectedMotif(null);
-              }}>
-                <div className="mobile-motif-modal" onClick={(e) => e.stopPropagation()}>
-                  {/* Motif Preview */}
-                  <div className="mobile-motif-preview">
-                    {motif.isCustom && motif.imageData ? (
-                      <img src={motif.imageData} alt="Motif preview" />
-                    ) : (
-                      <div className="motif-placeholder">Motif</div>
-                    )}
+              <div className="mobile-motif-panel">
+                {/* Position Controls */}
+                <div className="mobile-position-controls">
+                  <div className="position-grid">
+                    <button className="pos-btn" onClick={() => {
+                      setCurrentMotifs(prev => prev.map(m =>
+                        m.id === motif.id ? { ...m, y: Math.max(-50, m.y - 5) } : m
+                      ));
+                      setTimeout(() => handleGeneratePattern(), 100);
+                    }}>↑</button>
+                    <button className="pos-btn" onClick={() => {
+                      setCurrentMotifs(prev => prev.map(m =>
+                        m.id === motif.id ? { ...m, x: Math.max(-50, m.x - 5) } : m
+                      ));
+                      setTimeout(() => handleGeneratePattern(), 100);
+                    }}>←</button>
+                    <button className="pos-btn" onClick={() => {
+                      setCurrentMotifs(prev => prev.map(m =>
+                        m.id === motif.id ? { ...m, x: Math.min(150, m.x + 5) } : m
+                      ));
+                      setTimeout(() => handleGeneratePattern(), 100);
+                    }}>→</button>
+                    <button className="pos-btn" onClick={() => {
+                      setCurrentMotifs(prev => prev.map(m =>
+                        m.id === motif.id ? { ...m, y: Math.min(150, m.y + 5) } : m
+                      ));
+                      setTimeout(() => handleGeneratePattern(), 100);
+                    }}>↓</button>
                   </div>
+                </div>
 
-                  {/* Size Slider */}
-                  <div className="mobile-control-group">
-                    <label>Størrelse: {(motif.size * 100).toFixed(0)}%</label>
+                {/* Compact Controls */}
+                <div className="mobile-compact-controls">
+                  <div className="compact-row">
+                    <span className="compact-label">Størrelse:</span>
                     <input
                       type="range"
                       min="0.1"
@@ -1957,13 +1975,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       step="0.05"
                       value={motif.size}
                       onChange={(e) => handleMotifResize(motif.id, parseFloat(e.target.value))}
-                      className="mobile-slider"
+                      className="compact-slider"
                     />
+                    <span className="compact-value">{(motif.size * 100).toFixed(0)}%</span>
                   </div>
 
-                  {/* Balance/Threshold Slider */}
-                  <div className="mobile-control-group">
-                    <label>Balanse</label>
+                  <div className="compact-row">
+                    <span className="compact-label">Balanse:</span>
                     <input
                       type="range"
                       min="0"
@@ -1971,33 +1989,25 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       step="5"
                       value={motif.threshold}
                       onChange={(e) => handleMotifThreshold(motif.id, parseInt(e.target.value))}
-                      className="mobile-slider"
+                      className="compact-slider"
                     />
                   </div>
 
-                  {/* Flip Buttons */}
-                  <div className="mobile-control-group">
-                    <label>Vend:</label>
-                    <div className="mobile-flip-buttons">
-                      <button
-                        className={`btn-mobile-flip ${motif.flipHorizontal ? 'active' : ''}`}
-                        onClick={() => handleMotifFlip(motif.id, 'horizontal')}
-                      >
-                        ↔ Horisontal
-                      </button>
-                      <button
-                        className={`btn-mobile-flip ${motif.flipVertical ? 'active' : ''}`}
-                        onClick={() => handleMotifFlip(motif.id, 'vertical')}
-                      >
-                        ↕ Vertikal
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="mobile-control-actions">
+                  <div className="compact-row">
                     <button
-                      className="btn btn-secondary"
+                      className={`compact-btn ${motif.flipHorizontal ? 'active' : ''}`}
+                      onClick={() => handleMotifFlip(motif.id, 'horizontal')}
+                    >
+                      ↔
+                    </button>
+                    <button
+                      className={`compact-btn ${motif.flipVertical ? 'active' : ''}`}
+                      onClick={() => handleMotifFlip(motif.id, 'vertical')}
+                    >
+                      ↕
+                    </button>
+                    <button
+                      className="compact-btn"
                       onClick={() => {
                         handleMotifDuplicate(motif.id);
                         setShowMotifControlModal(false);
@@ -2007,7 +2017,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       Dupliser
                     </button>
                     <button
-                      className="btn btn-danger"
+                      className="compact-btn danger"
                       onClick={() => {
                         handleMotifRemove(motif.id);
                         setShowMotifControlModal(false);
@@ -2016,18 +2026,16 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     >
                       Fjern
                     </button>
+                    <button
+                      className="compact-btn close"
+                      onClick={() => {
+                        setShowMotifControlModal(false);
+                        setMobileSelectedMotif(null);
+                      }}
+                    >
+                      ×
+                    </button>
                   </div>
-
-                  {/* Close Button */}
-                  <button
-                    className="mobile-modal-close"
-                    onClick={() => {
-                      setShowMotifControlModal(false);
-                      setMobileSelectedMotif(null);
-                    }}
-                  >
-                    Ferdig
-                  </button>
                 </div>
               </div>
             );
