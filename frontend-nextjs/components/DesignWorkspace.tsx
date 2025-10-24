@@ -522,6 +522,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
     setCurrentMotifs(prev => [...prev, newMotif]);
     setSelectedMotifType(null);
+
+    // On mobile, auto-open control modal for the newly placed motif
+    if (isMobile) {
+      setMobileSelectedMotif(newMotif.id);
+      setShowMotifControlModal(true);
+    }
   };
 
   // const handleMotifDragStart = (motifId: string) => {
@@ -883,7 +889,14 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   }
 
                   if (motifsAtPosition.length > 0 && !manualFillMode) {
-                    handleMotifSelect(motifsAtPosition[0].id);
+                    if (isMobile) {
+                      // On mobile, open control modal
+                      setMobileSelectedMotif(motifsAtPosition[0].id);
+                      setShowMotifControlModal(true);
+                    } else {
+                      // On desktop, use the sidebar selection
+                      handleMotifSelect(motifsAtPosition[0].id);
+                    }
                   } else {
                     handleGridCellClick(colIndex, rowIndex, side);
                   }
