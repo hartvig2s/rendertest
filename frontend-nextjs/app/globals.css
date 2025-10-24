@@ -164,6 +164,11 @@
   .features {
     grid-template-columns: 1fr;
   }
+
+  /* Hide workspace header on mobile - using mobile-design-workspace instead */
+  .workspace-header {
+    display: none;
+  }
 }
 
 /* Test IDs styling */

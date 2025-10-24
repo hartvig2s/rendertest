@@ -1773,13 +1773,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           {/* Bottom Action Buttons */}
           <div className="mobile-bottom-buttons">
             <button
-              className="btn btn-outline"
-              onClick={handleGeneratePattern}
-              disabled={autoUpdating}
-            >
-              {autoUpdating ? 'Genererer...' : 'Generer mønster'}
-            </button>
-            <button
               className="btn btn-primary"
               onClick={handleExportPattern}
               disabled={!generatedPattern && !backSidePattern}
