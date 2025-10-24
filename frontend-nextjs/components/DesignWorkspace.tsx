@@ -774,21 +774,33 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     // Auto-calculate cell size to fit screen
     // On mobile: use most of viewport width (90vw)
     // On desktop: use available panel width
-    let baseCellSize: number;
+    let cellSize: number;
+    let padding: number;
+
     if (isMobile) {
-      // Calculate based on 90% of viewport width, accounting for padding
+      // Calculate to fit within screen width
       const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
-      const containerWidth = viewportWidth * 0.9; // Account for mobile-grid-container padding
-      const paddingSpace = 40; // Estimate for container and grid padding
-      baseCellSize = Math.max(8, Math.min(25, (containerWidth - paddingSpace) / gridWidth));
+      // Account for: mobile-design-workspace padding (1rem * 2 = 32px) + mobile-grid-container padding (1rem * 2 = 32px)
+      const availableWidth = viewportWidth - 64;
+
+      // Calculate cell size that fits, accounting for grid padding
+      const tempCellSize = availableWidth / gridWidth;
+      const tempPadding = Math.max(4, Math.round(tempCellSize * 0.15));
+      const gridPaddingTotal = tempPadding * 2;
+
+      // Final cell size that ensures grid + padding fits in available width
+      cellSize = Math.max(8, Math.min(25, (availableWidth - gridPaddingTotal) / gridWidth));
+      padding = Math.max(4, Math.round(cellSize * 0.15));
+
+      // Limit zoom on mobile
+      const effectiveZoom = Math.min(gridZoom, 1.0);
+      cellSize = cellSize * effectiveZoom;
     } else {
       // Desktop: ~50% of screen width for center panel with 2 grids
-      baseCellSize = Math.max(8, Math.min(25, 600 / gridWidth));
+      const baseCellSize = Math.max(8, Math.min(25, 600 / gridWidth));
+      cellSize = baseCellSize * gridZoom;
+      padding = Math.max(4, Math.round(cellSize * 0.15));
     }
-    // Apply zoom multiplier to cell size (but limit zoom on mobile to prevent overflow)
-    const effectiveZoom = isMobile ? Math.min(gridZoom, 1.5) : gridZoom;
-    const cellSize = baseCellSize * effectiveZoom;
-    const padding = Math.max(4, Math.round(cellSize * 0.15));
 
     return (
       <div
@@ -1725,6 +1737,32 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   >
                     Avbryt
                   </button>
+                </div>
+              </div>
+            )}
+
+            {/* Display created text and uploaded motifs */}
+            {customMotifs.length > 0 && (
+              <div className="mobile-custom-motifs">
+                <h4 className="mobile-section-title">Mine motiver</h4>
+                <div className="mobile-motif-grid">
+                  {customMotifs.map((customMotif) => (
+                    <div
+                      key={customMotif.id}
+                      className={`motif-item ${selectedMotifType === customMotif.id ? 'selected' : ''}`}
+                      onClick={() => handleMotifClick(customMotif.id, customMotif.name)}
+                      title={customMotif.name}
+                    >
+                      <div className="motif-preview custom-motif">
+                        <img
+                          src={customMotif.imageData}
+                          alt={customMotif.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        />
+                      </div>
+                      <span className="motif-name">{customMotif.name}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

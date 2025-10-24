@@ -3431,6 +3431,31 @@ button, .btn {
   justify-content: center;
 }
 
+.mobile-custom-motifs {
+  background: #FFFBF5;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.mobile-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.75rem;
+}
+
+.motif-name {
+  display: block;
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .mobile-bottom-buttons {
   display: flex;
   flex-direction: column;
