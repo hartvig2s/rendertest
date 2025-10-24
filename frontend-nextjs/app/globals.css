@@ -3506,3 +3506,40 @@ button, .btn {
     gap: 0.5rem;
   }
 }
+
+/* Ensure project creation stays contained on all screens */
+.project-creation-page {
+  overflow-x: hidden;
+}
+
+.project-creation-card {
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.project-form-new {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-group-new input,
+.dimension-input {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Extra small screens */
+@media (max-width: 400px) {
+  .project-creation-page {
+    padding: 0.5rem;
+  }
+  
+  .project-creation-card {
+    padding: 1.5rem 1rem;
+    max-width: 100%;
+  }
+  
+  .form-actions-new {
+    margin-top: 1.5rem;
+  }
+}
