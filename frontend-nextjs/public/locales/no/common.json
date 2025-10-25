@@ -1,0 +1,40 @@
+{
+  "app": {
+    "title": "Heklet",
+    "description": "Design din egen hekleveske - fargelegg, plasser motiver og skap din personlige oppskrift"
+  },
+  "home": {
+    "title": "Heklet",
+    "subtitle": "Design din egen hekleveske - fargelegg, plasser motiver og skap din personlige oppskrift",
+    "startButton": "Start designet ditt"
+  },
+  "project": {
+    "new": "Nytt prosjekt",
+    "projectName": "Prosjektnavn:",
+    "width": "Bredde:",
+    "height": "Høyde:",
+    "cancel": "Avbryt",
+    "create": "Opprett prosjekt",
+    "nameRequired": "Prosjektnavn er påkrevd",
+    "nameTooLong": "Prosjektnavn må være 100 tegn eller mindre",
+    "widthInvalid": "Bredde må være mellom 8 og 200 cm",
+    "heightInvalid": "Høyde må være mellom 7.2 og 180 cm",
+    "gridWidthInvalid": "Rutenettbredde utenfor gyldig område",
+    "gridHeightInvalid": "Rutenetthøyde utenfor gyldig område"
+  },
+  "workspace": {
+    "feedback": "Gi oss tilbakemeldinger på verktøyet",
+    "export": "Eksporter mønster",
+    "exportDisabled": "Vent til mønsteret er oppdatert",
+    "exportNoPattern": "Plasser motiver for å generere mønster",
+    "dimensions": "Mål:",
+    "yarn": "Garn:",
+    "revisit": "Revidering"
+  },
+  "colors": {
+    "green": "Grønn",
+    "white": "Hvit",
+    "red": "Rød",
+    "blue": "Blå"
+  }
+}

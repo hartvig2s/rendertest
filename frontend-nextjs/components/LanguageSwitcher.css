@@ -1,0 +1,21 @@
+.language-switcher {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+  color: #333;
+}
+
+.language-switcher:hover {
+  background-color: #e0e0e0;
+  border-color: #bbb;
+}
+
+.language-switcher:active {
+  background-color: #d0d0d0;
+}

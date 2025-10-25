@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface ProjectCreationProps {
   onProjectCreated: (project: { name: string; width: number; height: number }) => void;
@@ -8,6 +10,7 @@ interface ProjectCreationProps {
 }
 
 export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreated, onCancel }) => {
+  const { t } = useTranslation('common');
   const [name, setName] = useState('');
   const [widthCm, setWidthCm] = useState(30);
   const [heightCm, setHeightCm] = useState(35);
@@ -23,25 +26,25 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
     const newErrors: string[] = [];
 
     if (!name.trim()) {
-      newErrors.push('Prosjektnavn er påkrevd');
+      newErrors.push(t('project.nameRequired'));
     } else if (name.length > 100) {
-      newErrors.push('Prosjektnavn må være 100 tegn eller mindre');
+      newErrors.push(t('project.nameTooLong'));
     }
 
     if (widthCm < 8 || widthCm > 200) {
-      newErrors.push('Bredde må være mellom 8 og 200 cm');
+      newErrors.push(t('project.widthInvalid'));
     }
 
     if (heightCm < 7.2 || heightCm > 180) {
-      newErrors.push('Høyde må være mellom 7.2 og 180 cm');
+      newErrors.push(t('project.heightInvalid'));
     }
 
     if (gridWidth < 8 || gridWidth > 200) {
-      newErrors.push('Rutenettbredde utenfor gyldig område');
+      newErrors.push(t('project.gridWidthInvalid'));
     }
 
     if (gridHeight < 8 || gridHeight > 200) {
-      newErrors.push('Rutenetthøyde utenfor gyldig område');
+      newErrors.push(t('project.gridHeightInvalid'));
     }
 
     setErrors(newErrors);
@@ -79,8 +82,11 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
 
   return (
     <div className="project-creation-page">
+      <div style={{ position: 'absolute', top: 20, right: 20 }}>
+        <LanguageSwitcher />
+      </div>
       <div className="project-creation-card">
-        <h2>Nytt prosjekt</h2>
+        <h2>{t('project.new')}</h2>
 
         {errors.length > 0 && (
           <div className="error-messages" data-testid="error-message">
@@ -94,7 +100,7 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
 
         <form onSubmit={handleSubmit} className="project-form-new">
           <div className="form-group-new">
-            <label htmlFor="projectName">Prosjektnavn:</label>
+            <label htmlFor="projectName">{t('project.projectName')}</label>
             <input
               id="projectName"
               name="projectName"
@@ -109,7 +115,7 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
 
           <div className="form-row-new">
             <div className="form-group-new">
-              <label htmlFor="width">Bredde:</label>
+              <label htmlFor="width">{t('project.width')}</label>
               <div className="input-with-unit">
                 <input
                   id="width"
@@ -126,7 +132,7 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
             </div>
 
             <div className="form-group-new">
-              <label htmlFor="height">Høyde:</label>
+              <label htmlFor="height">{t('project.height')}</label>
               <div className="input-with-unit">
                 <input
                   id="height"
@@ -145,10 +151,10 @@ export const ProjectCreation: React.FC<ProjectCreationProps> = ({ onProjectCreat
 
           <div className="form-actions-new">
             <button type="button" onClick={onCancel} className="btn-cancel-new">
-              Avbryt
+              {t('project.cancel')}
             </button>
             <button type="submit" className="btn-submit-new">
-              Opprett prosjekt
+              {t('project.create')}
             </button>
           </div>
         </form>

@@ -1,0 +1,40 @@
+{
+  "app": {
+    "title": "Heklet",
+    "description": "Design your own crochet bag - color, place motifs and create your personal recipe"
+  },
+  "home": {
+    "title": "Heklet",
+    "subtitle": "Design your own crochet bag - color, place motifs and create your personal recipe",
+    "startButton": "Start your design"
+  },
+  "project": {
+    "new": "New project",
+    "projectName": "Project name:",
+    "width": "Width:",
+    "height": "Height:",
+    "cancel": "Cancel",
+    "create": "Create project",
+    "nameRequired": "Project name is required",
+    "nameTooLong": "Project name must be 100 characters or less",
+    "widthInvalid": "Width must be between 8 and 200 cm",
+    "heightInvalid": "Height must be between 7.2 and 180 cm",
+    "gridWidthInvalid": "Grid width out of valid range",
+    "gridHeightInvalid": "Grid height out of valid range"
+  },
+  "workspace": {
+    "feedback": "Give us feedback on the tool",
+    "export": "Export pattern",
+    "exportDisabled": "Wait until the pattern is updated",
+    "exportNoPattern": "Place motifs to generate pattern",
+    "dimensions": "Dimensions:",
+    "yarn": "Yarn:",
+    "revisit": "Revisit"
+  },
+  "colors": {
+    "green": "Green",
+    "white": "White",
+    "red": "Red",
+    "blue": "Blue"
+  }
+}

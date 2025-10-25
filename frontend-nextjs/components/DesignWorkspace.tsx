@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { pdf } from '@react-pdf/renderer';
+import { useTranslation } from 'react-i18next';
 import { PatternPDF } from './PatternPDF';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { motifFiles } from '@/lib/motifs';
 
 interface Project {
@@ -31,6 +33,7 @@ interface DesignWorkspaceProps {
 }
 
 export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBack }) => {
+  const { t } = useTranslation('common');
   const [placedMotifs, setPlacedMotifs] = useState<PlacedMotif[]>([]);
   const [selectedMotifType, setSelectedMotifType] = useState<string | null>(null);
   const [generatedPattern, setGeneratedPattern] = useState<any>(null);
@@ -1661,18 +1664,19 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           <button
             className="btn btn-secondary"
             onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLScqOCph9RL1wJwa3bglCA-fPsgcGnpMLZXOyG9jt5RRs1ZTpg/viewform?pli=1', '_blank')}
-            title="Gi oss tilbakemeldinger på verktøyet"
+            title={t('workspace.feedback')}
           >
-            Gi oss tilbakemeldinger
+            {t('workspace.feedback')}
           </button>
           <button
             className="btn btn-export"
             onClick={handleExportPattern}
             disabled={(!generatedPattern && !backSidePattern) || autoUpdating}
-            title={(generatedPattern || backSidePattern) && !autoUpdating ? "Eksporter veskemønster som tekstfil" : autoUpdating ? "Vent til mønsteret er oppdatert" : "Plasser motiver for å generere mønster"}
+            title={(generatedPattern || backSidePattern) && !autoUpdating ? t('workspace.export') : autoUpdating ? t('workspace.exportDisabled') : t('workspace.exportNoPattern')}
           >
-            Eksporter oppskrift
+            {t('workspace.export')}
           </button>
+          <LanguageSwitcher />
         </div>
       </header>
 

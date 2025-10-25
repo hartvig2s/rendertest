@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 
 // Define styles for PDF
@@ -122,6 +123,8 @@ export const PatternPDF: React.FC<PatternPDFProps> = ({
   frontGridSVG,
   backGridSVG,
 }) => {
+  const { t } = useTranslation('instructions');
+
   console.log('PatternPDF received:', {
     hasFrontGridSVG: !!frontGridSVG,
     hasBackGridSVG: !!backGridSVG,
@@ -141,88 +144,89 @@ export const PatternPDF: React.FC<PatternPDFProps> = ({
     const instructions: string[] = [];
 
     // Introduction
-    instructions.push('FILET-HEKLEDE VESKE - Trinn-for-trinn oppskrift\n');
+    instructions.push(t('pdf.pattern.title') + '\n');
 
     // Step 1: Foundation/Bottom
-    instructions.push('TRINN 1: BUNNKJEDEN');
-    instructions.push(`Hekle ${N} luftmasker (lm). Dette utgjør lengden på veskens bunn.`);
-    instructions.push(`Hekle 2 lm til (vendekjede).`);
+    instructions.push(t('pdf.pattern.step1'));
+    instructions.push(t('pdf.pattern.step1_chain', { N }));
+    instructions.push(t('pdf.pattern.step1_turn'));
 
     // Step 2: First side of foundation
-    instructions.push('\nTRINN 2: FØRSTE SIDE AV BUNNEN');
+    instructions.push('\n' + t('pdf.pattern.step2'));
 
     if (useFullyFilledInstruction && !useOpeningsInstruction) {
       // Fully filled bottom row
-      instructions.push(`Hekle 1 stav (st) i den siste av de ${N} lm (den ${N}. lm fra kroken).`);
-      instructions.push(`Fortsett med 1 st i hver av de resterende ${N - 1} lm.`);
-      instructions.push(`I den siste lm: Hekle 3 st i samme maske. Dette danner hjørnet.`);
+      instructions.push(t('pdf.pattern.step2_fully_filled', { N }));
+      instructions.push(t('pdf.pattern.step2_fully_filled_cont', { 'N-1': N - 1 }));
+      instructions.push(t('pdf.pattern.step2_fully_filled_corner'));
     } else {
       // Bottom row with openings - follow diagram
-      instructions.push(`Følg diagrammet for bunnens første rad (nederste rad i diagrammet):`);
-      instructions.push(`• Fylt rute = 2 staver i luftmasken`);
-      instructions.push(`• Åpen rute = 1 luftmaske, hopp over 1 luftmaske i bunnkjeden`);
-      instructions.push(`Start i den siste av de ${N} lm og arbeid mot starten.`);
+      instructions.push(t('pdf.pattern.step2_openings'));
+      instructions.push(t('pdf.pattern.step2_openings_filled'));
+      instructions.push(t('pdf.pattern.step2_openings_open'));
+      instructions.push(t('pdf.pattern.step2_openings_direction', { N }));
     }
 
     // Step 3: Second side of foundation
-    instructions.push('\nTRINN 3: ANDRE SIDE AV BUNNEN');
-    instructions.push(`Følg første rad på det andre diagrammet, samme vei.`);
-    instructions.push(`Hekles alltid fra høyre til venstre.`);
+    instructions.push('\n' + t('pdf.pattern.step3'));
+    instructions.push(t('pdf.pattern.step3_follow'));
+    instructions.push(t('pdf.pattern.step3_direction'));
 
-    instructions.push(`Avslutt runden med 1 kjedemaske (km) i toppen av de 2 første vendekjedene.`);
-    instructions.push(`Du har nå heklet den første raden i diagrammet ditt.`);
+    instructions.push(t('pdf.pattern.step3_finish'));
+    instructions.push(t('pdf.pattern.step3_done'));
 
     // Step 4: Working the sides
-    instructions.push('\n\nTRINN 4: HEKLE SIDENE (FILET-MØNSTER)');
-    instructions.push(`Fra og med neste omgang skal du følge diagrammet rad for rad.`);
-    instructions.push(`Diagrammet leses fra bunnen og oppover.`);
+    instructions.push('\n\n' + t('pdf.pattern.step4'));
+    instructions.push(t('pdf.pattern.step4_from_next'));
+    instructions.push(t('pdf.pattern.step4_read_direction'));
 
-    instructions.push('\nSlik leser du diagrammet:');
-    instructions.push(`Skal alltid leses fra høyre til venstre.`);
-    instructions.push(`• SVART/FYLT RUTE = 2 staver`);
-    instructions.push(`• HVIT/ÅPEN RUTE = 1 stavmaske og 1 luftmaske (den neste staven utgjør venstre side av ruten)`);
+    instructions.push('\n' + t('pdf.pattern.step4_read_title'));
+    instructions.push(t('pdf.pattern.step4_read_direction_detail'));
+    instructions.push(t('pdf.pattern.step4_read_filled'));
+    instructions.push(t('pdf.pattern.step4_read_open'));
 
-    instructions.push('\nFor hver omgang/rad:');
-    instructions.push(`1. Start hver omgang med 2 lm (vendemaske).`);
-    instructions.push(`2. Følg diagrammet fra høyre mot venstre.`);
-    instructions.push(`3. Hekle masker i samsvar med mønsteret (fylt eller åpen rute).`);
-    instructions.push(`4. Avslutt omgangen med 1 km i toppen av vendemaskene.`);
+    instructions.push('\n' + t('pdf.pattern.step4_each_round'));
+    instructions.push(t('pdf.pattern.step4_each_1'));
+    instructions.push(t('pdf.pattern.step4_each_2'));
+    instructions.push(t('pdf.pattern.step4_each_3'));
+    instructions.push(t('pdf.pattern.step4_each_4'));
 
-    instructions.push('\nViktige detaljer:');
-    instructions.push(`• Når du hekler en fylt rute: Hekle 2 staver gjennom lm-buen.`);
-    instructions.push(`• Når du hekler en åpen rute: Hekle 1 st og 1 lm. Den neste staven (i neste rute) danner venstre side av den åpne ruten.`);
-    instructions.push(`• Hold jevn stramhet gjennom hele arbeidet.`);
-    instructions.push(`• Tell masker jevnlig for å sikre at du følger diagrammet korrekt.`);
+    instructions.push('\n' + t('pdf.pattern.step4_details'));
+    instructions.push(t('pdf.pattern.step4_details_filled'));
+    instructions.push(t('pdf.pattern.step4_details_open'));
+    instructions.push(t('pdf.pattern.step4_details_tension'));
+    instructions.push(t('pdf.pattern.step4_details_count'));
 
     // Step 5: Height and finishing
-    instructions.push(`\n\nTRINN 5: HØYDE OG AVSLUTNING`);
-    instructions.push(`Fortsett å hekle omganger oppover til du har heklet alle ${gridHeight} radene i diagrammet.`);
-    instructions.push(`Veskens høyde blir ca. ${(gridHeight * 0.9).toFixed(1)} cm.`);
+    instructions.push(`\n\n${t('pdf.pattern.step5')}`);
+    instructions.push(t('pdf.pattern.step5_continue', { gridHeight }));
+    instructions.push(t('pdf.pattern.step5_height', { height: (gridHeight * 0.9).toFixed(1) }));
 
-    instructions.push('\nAvslutning av siste omgang:');
-    instructions.push(`1. Etter siste rad, avslutt med 1 km.`);
-    instructions.push(`2. Kutt garnet med ca. 15 cm hale.`);
-    instructions.push(`3. Trekk gjennom siste maske og stram til.`);
-    instructions.push(`4. Fest garnenden ved å sy den inn på vrangen med nål.`);
+    instructions.push('\n' + t('pdf.pattern.step5_finishing'));
+    instructions.push(t('pdf.pattern.step5_finishing_1'));
+    instructions.push(t('pdf.pattern.step5_finishing_2'));
+    instructions.push(t('pdf.pattern.step5_finishing_3'));
+    instructions.push(t('pdf.pattern.step5_finishing_4'));
 
     // Step 6: Handles (optional guidance)
-    instructions.push('\n\nTRINN 6: HANKER (VALGFRITT)');
-    instructions.push(`Du kan lage hanker på flere måter:`);
-    instructions.push(`• Hekle luftmaskekjeder og fest dem på innsiden av vesken`);
-    instructions.push(`• Hekle tette staver frem og tilbake for en tykkere hank`);
-    instructions.push(`• Bruk lærreimer eller kjøpte hanker`);
+    instructions.push(`\n\n${t('pdf.pattern.step6')}`);
+    instructions.push(t('pdf.pattern.step6_intro'));
+    instructions.push(t('pdf.pattern.step6_option1'));
+    instructions.push(t('pdf.pattern.step6_option2'));
+    instructions.push(t('pdf.pattern.step6_option3'));
 
-    instructions.push('\nForslag til heklede hanker:');
-    instructions.push(`1. Fest garnet på innsiden av vesken, ca. 5-8 cm fra sidekanten.`);
-    instructions.push(`2. Hekle ${Math.max(60, Math.round(gridWidth * 2.5))} lm (juster lengde etter ønske).`);
-    instructions.push(`3. Fest med 1 km på innsiden av vesken, 5-8 cm fra andre sidekant.`);
-    instructions.push(`4. Gjenta for hank på andre side av vesken.`);
+    instructions.push('\n' + t('pdf.pattern.step6_suggested'));
+    instructions.push(t('pdf.pattern.step6_suggested_1'));
+    const handleLength = Math.max(60, Math.round(gridWidth * 2.5));
+    instructions.push(t('pdf.pattern.step6_suggested_2', { handleLength }));
+    instructions.push(t('pdf.pattern.step6_suggested_3'));
+    instructions.push(t('pdf.pattern.step6_suggested_4'));
 
     // Finishing touches
-    instructions.push('\n\nFERDIGSTILLESE');
-    instructions.push(`• Sy inn alle garnender forsiktig på vrangen.`);
-    instructions.push(`• Blokkér vesken om ønskelig: Fukt lett og legg flat til tørk.`);
-    instructions.push(`• Valgfritt: Sy i et for av stoff for å beskytte innholdet.`);
+    instructions.push(`\n\n${t('pdf.pattern.finishing')}`);
+    instructions.push(t('pdf.pattern.finishing_1'));
+    instructions.push(t('pdf.pattern.finishing_2'));
+    instructions.push(t('pdf.pattern.finishing_3'));
 
     return instructions.join('\n');
   };
@@ -235,7 +239,7 @@ export const PatternPDF: React.FC<PatternPDFProps> = ({
       <Page size="A4" style={styles.page}>
         <Text style={styles.gridTitle}>{title} - Diagram</Text>
         <Text style={[styles.infoText, { marginBottom: 10 }]}>
-          Rutenettstørrelse: {gridWidth} × {gridHeight} ruter
+          {t('pdf.gridDimensions', { gridWidth, gridHeight })}
         </Text>
         <Image
           src={gridImage}
@@ -254,25 +258,25 @@ export const PatternPDF: React.FC<PatternPDFProps> = ({
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Logo */}
-        <Text style={styles.logo}>Hektet</Text>
+        <Text style={styles.logo}>{t('pdf.logo')}</Text>
 
         {/* Yarn and tools info box */}
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            Garn: {totalSkeins} nøster bomullsgarn med vekt på ca. 50 gr / 75 m
+            {t('pdf.yarn', { totalSkeins })}
           </Text>
-          <Text style={styles.infoText}>Heklekrok: 3,5 mm</Text>
-          <Text style={styles.infoText}>Heklefasthet:</Text>
-          <Text style={styles.infoText}>10 ruter = 10 cm i bredden</Text>
-          <Text style={styles.infoText}>9 ruter = 10 cm i høyden</Text>
+          <Text style={styles.infoText}>{t('pdf.hook')}</Text>
+          <Text style={styles.infoText}>{t('pdf.tension')}</Text>
+          <Text style={styles.infoText}>{t('pdf.tensionWidth')}</Text>
+          <Text style={styles.infoText}>{t('pdf.tensionHeight')}</Text>
         </View>
 
         {/* Glossary box */}
         <View style={styles.infoBox}>
-          <Text style={styles.infoText}>Ordliste:</Text>
-          <Text style={styles.infoText}>Luftmasker = chain stitch</Text>
-          <Text style={styles.infoText}>Kjedemasker = slip stitch</Text>
-          <Text style={styles.infoText}>Stavmasker = double crochet</Text>
+          <Text style={styles.infoText}>{t('pdf.glossary')}</Text>
+          <Text style={styles.infoText}>{t('pdf.chainStitch')}</Text>
+          <Text style={styles.infoText}>{t('pdf.slipStitch')}</Text>
+          <Text style={styles.infoText}>{t('pdf.doubleCrochet')}</Text>
         </View>
 
         {/* Pattern instructions */}
@@ -282,17 +286,17 @@ export const PatternPDF: React.FC<PatternPDFProps> = ({
         {(frontGridSVG || backGridSVG) && (
           <View style={styles.gridContainer}>
             <Text style={[styles.infoText, { marginTop: 10, fontSize: 10, fontWeight: 'bold' }]}>
-              Se neste side(r) for rutenettdiagram
+              {t('pdf.seeGrids')}
             </Text>
           </View>
         )}
       </Page>
 
       {/* Front grid SVG on separate page */}
-      {frontGridSVG && renderGridSVGPage(frontGridSVG, 'Forside')}
+      {frontGridSVG && renderGridSVGPage(frontGridSVG, t('pdf.pattern.frontTitle') || 'Forside')}
 
       {/* Back grid SVG on separate page */}
-      {backGridSVG && renderGridSVGPage(backGridSVG, 'Bakside')}
+      {backGridSVG && renderGridSVGPage(backGridSVG, t('pdf.pattern.backTitle') || 'Bakside')}
     </Document>
   );
 };
