@@ -1433,6 +1433,22 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
+      // Track PDF export event in Plausible
+      if (typeof window !== 'undefined' && (window as any).plausible) {
+        console.log('🎯 Plausible: Tracking PDF Export event');
+        (window as any).plausible('PDF Export', {
+          props: {
+            projectName: project.name,
+            gridSize: `${gridWidth}x${gridHeight}`,
+            hasFront: !!frontPattern,
+            hasBack: !!backPattern
+          }
+        });
+        console.log('✅ Plausible: PDF Export event sent');
+      } else {
+        console.warn('⚠️ Plausible not loaded - event not tracked');
+      }
+
       setAutoUpdating(false);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -1667,6 +1683,14 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             title={t('workspace.feedback')}
           >
             {t('workspace.feedback')}
+          </button>
+          <button
+            className="btn btn-export"
+            onClick={handleExportPattern}
+            disabled={(!generatedPattern && !backSidePattern) || autoUpdating}
+            title={(generatedPattern || backSidePattern) && !autoUpdating ? t('workspace.export') : autoUpdating ? t('workspace.exportDisabled') : t('workspace.exportNoPattern')}
+          >
+            {t('workspace.export')}
           </button>
           <LanguageSwitcher />
         </div>
@@ -1919,17 +1943,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Bottom Action Buttons */}
-          <div className="mobile-bottom-buttons">
-            <button
-              className="btn btn-primary"
-              onClick={handleExportPattern}
-              disabled={!generatedPattern && !backSidePattern}
-            >
-              {t('workspace.export')}
-            </button>
           </div>
 
           {/* Mobile Motif Control Compact Panel */}
