@@ -2061,24 +2061,24 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           className="motif-panel"
           style={{ width: `${leftPanelWidth}px`, minWidth: `${leftPanelWidth}px`, overflow: 'auto' }}
         >
-          <h3>Motivbibliotek</h3>
+          <h3>{t('motifs.library')}</h3>
 
           {customMotifs.length > 0 && (
             <>
               <div className="category-selector">
-                <label htmlFor="category-select">Kategori:</label>
+                <label htmlFor="category-select">{t('motifs.category')}</label>
                 <select
                   id="category-select"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="category-dropdown"
                 >
-                  <option value="all">Alle motiver</option>
-                  <option value="sea">Hav</option>
-                  <option value="birds">Fugler</option>
-                  <option value="flowers">Blomster</option>
-                  <option value="sport">Sport</option>
-                  <option value="other">Andre</option>
+                  <option value="all">{t('motifs.categories.all')}</option>
+                  <option value="sea">{t('motifs.categories.sea')}</option>
+                  <option value="birds">{t('motifs.categories.birds')}</option>
+                  <option value="flowers">{t('motifs.categories.flowers')}</option>
+                  <option value="sport">{t('motifs.categories.sport')}</option>
+                  <option value="other">{t('motifs.categories.other')}</option>
                 </select>
               </div>
 
@@ -2106,7 +2106,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           )}
 
           <div className="upload-section">
-            <h4>Egne motiver</h4>
+            <h4>{t('motifs.custom')}</h4>
 
             <div className="motif-creation-buttons">
               <input
@@ -2289,18 +2289,18 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                             setGridWidth(newWidth);
                             setGridHeight(newHeight);
                           } else {
-                            alert('Bredde må være mellom 8 og 200 cm, høyde må være mellom 7.2 og 180 cm');
+                            alert(t('workspace.resizeError'));
                           }
                         }
                       }}
-                      title="Endre rutenettets størrelse"
+                      title={t('workspace.editDimensions')}
                     >
-                      Rediger størrelse
+                      {t('workspace.resizeButton')}
                     </button>
                   </div>
 
                   <div className="color-picker-section">
-                    <label>Farge:</label>
+                    <label>{t('workspace.yarn')}</label>
                     <div className="color-options">
                       {(['white', 'red', 'green', 'blue'] as const).map((color) => (
                         <button
@@ -2312,7 +2312,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                             border: color === 'white' ? '2px solid #999' : '2px solid transparent',
                             borderColor: fillColor === color ? '#B4BA8F' : (color === 'white' ? '#999' : 'transparent')
                           }}
-                          title={`Bruk ${color === 'white' ? 'hvit' : color === 'red' ? 'rød' : color === 'green' ? 'grønn' : 'blå'} farge`}
+                          title={`Use ${t(`colors.${color}`)} color`}
                         >
                         </button>
                       ))}
@@ -2320,44 +2320,44 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   </div>
 
                   <div className="edge-pattern-section">
-                    <label>Kantmønster:</label>
+                    <label>{t('grid.border')}</label>
                     <select
                       value={edgePattern}
                       onChange={(e) => setEdgePattern(e.target.value as any)}
                       className="edge-pattern-select"
                     >
-                      <option value="none">Ingen</option>
-                      <option value="border-1">Enkel kant</option>
-                      <option value="border-2">Dobbel kant</option>
-                      <option value="corner-triangles">Hjørnetriangel</option>
-                      <option value="checkerboard-edges">Sjakkmønster kant</option>
-                      <option value="snake-pattern">Keltisk fletting</option>
-                      <option value="stepped-border">Trappekant</option>
-                      <option value="checkerboard-2row">Mini sjakkmønster</option>
+                      <option value="none">{t('borderPatterns.none')}</option>
+                      <option value="border-1">{t('borderPatterns.simple')}</option>
+                      <option value="border-2">{t('borderPatterns.double')}</option>
+                      <option value="corner-triangles">{t('borderPatterns.cornerTriangle')}</option>
+                      <option value="checkerboard-edges">{t('borderPatterns.checkerboard')}</option>
+                      <option value="snake-pattern">{t('borderPatterns.celticWeave')}</option>
+                      <option value="stepped-border">{t('borderPatterns.stairStep')}</option>
+                      <option value="checkerboard-2row">{t('borderPatterns.miniCheckerboard')}</option>
                     </select>
                   </div>
 
                   <div className="copy-pattern-section">
-                    <label>Kopier:</label>
+                    <label>{t('grid.copyFrontToBack')}</label>
                     <button
                       className="btn btn-small btn-secondary"
                       onClick={handleCopyFrontToBack}
-                      title="Kopier forside-design til bakside"
+                      title={t('grid.copyFrontToBack')}
                       disabled={placedMotifs.length === 0}
                     >
-                      Forside → bakside
+                      {t('grid.copyButton')}
                     </button>
                   </div>
 
                   <div className="invert-pattern-section">
-                    <label>Mønster:</label>
+                    <label>{t('grid.pattern')}</label>
                     <button
                       className="btn btn-small btn-secondary"
                       data-testid="stitch-interpretation-toggle"
                       onClick={toggleStitchInterpretation}
-                      title="Bytt fyllte og åpne ruter"
+                      title={t('grid.invertPattern')}
                     >
-                      Invertér
+                      {t('grid.invert')}
                     </button>
                   </div>
 
@@ -2512,7 +2512,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         >
           {/* Motif Controls */}
           <div className="motif-controls-section">
-            <h4>Plasserte motiver</h4>
+            <h4>{t('motifs.placed')}</h4>
             {getCurrentMotifs().length > 0 ? (
               <div className="motif-controls-list">
                 {getCurrentMotifs().map((motif) => {
@@ -2635,7 +2635,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 })}
               </div>
             ) : (
-              <p className="no-motifs">Ingen motiver plassert på {currentSide === 'front' ? 'forsiden' : 'baksiden'}</p>
+              <p className="no-motifs">{t('grid.noMotifsOnSide', { side: currentSide === 'front' ? t('grid.front') : t('grid.back') })}</p>
             )}
           </div>
         </aside>
