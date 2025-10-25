@@ -2117,14 +2117,14 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 id="motif-upload"
               />
               <label htmlFor="motif-upload" className="upload-button">
-                Last opp bilde
+                {t('motifs.uploadImage')}
               </label>
 
               <button
                 className="upload-button text-button"
                 onClick={() => setShowTextInput(!showTextInput)}
               >
-                Legg til tekst
+                {t('motifs.addText')}
               </button>
             </div>
 
@@ -2134,7 +2134,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
-                  placeholder="Skriv inn tekst for motiv..."
+                  placeholder={t('motifs.textPlaceholder')}
                   className="text-input"
                   maxLength={50}
                   onKeyDown={(e) => {
@@ -2399,12 +2399,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   {/* Front Grid */}
                   <div className={`grid-side ${currentSide === 'front' ? 'active' : 'inactive'}`}>
                     <div className="grid-side-header">
-                      <h4>Forside</h4>
+                      <h4>{t('grid.front')}</h4>
                       <button
                         className="btn btn-small btn-activate"
                         onClick={() => setCurrentSide('front')}
                       >
-                        Aktiver
+                        {t('grid.activate')}
                       </button>
                     </div>
 
@@ -2433,12 +2433,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   {/* Back Grid */}
                   <div className={`grid-side ${currentSide === 'back' ? 'active' : 'inactive'}`}>
                     <div className="grid-side-header">
-                      <h4>Bakside</h4>
+                      <h4>{t('grid.back')}</h4>
                       <button
                         className="btn btn-small btn-activate"
                         onClick={() => setCurrentSide('back')}
                       >
-                        Aktiver
+                        {t('grid.activate')}
                       </button>
                     </div>
 
@@ -2484,9 +2484,9 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   textAlign: 'center'
                 }}
               >
-                <p>Interaktivt rutenett vil vises her etter at motiver er plassert</p>
-                <p>Last opp bilder eller lag tekstmotiver fra venstre panel for å starte design</p>
-                <p><strong>Du kan også dra og slippe bilder direkte hit!</strong></p>
+                <p>{t('grid.placeholder')}</p>
+                <p>{t('grid.placeholderUpload')}</p>
+                <p><strong>{t('grid.placeholderDrag')}</strong></p>
               </div>
             )}
           </div>
