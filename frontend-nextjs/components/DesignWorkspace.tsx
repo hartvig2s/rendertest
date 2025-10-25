@@ -1668,14 +1668,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           >
             {t('workspace.feedback')}
           </button>
-          <button
-            className="btn btn-export"
-            onClick={handleExportPattern}
-            disabled={(!generatedPattern && !backSidePattern) || autoUpdating}
-            title={(generatedPattern || backSidePattern) && !autoUpdating ? t('workspace.export') : autoUpdating ? t('workspace.exportDisabled') : t('workspace.exportNoPattern')}
-          >
-            {t('workspace.export')}
-          </button>
           <LanguageSwitcher />
         </div>
       </header>
