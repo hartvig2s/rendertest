@@ -123,7 +123,7 @@ export const PatternPDF: React.FC<PatternPDFProps> = ({
   frontGridSVG,
   backGridSVG,
 }) => {
-  const { t } = useTranslation('instructions');
+  const { t, i18n } = useTranslation('instructions');
 
   console.log('PatternPDF received:', {
     hasFrontGridSVG: !!frontGridSVG,
@@ -271,13 +271,15 @@ export const PatternPDF: React.FC<PatternPDFProps> = ({
           <Text style={styles.infoText}>{t('pdf.tensionHeight')}</Text>
         </View>
 
-        {/* Glossary box */}
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>{t('pdf.glossary')}</Text>
-          <Text style={styles.infoText}>{t('pdf.chainStitch')}</Text>
-          <Text style={styles.infoText}>{t('pdf.slipStitch')}</Text>
-          <Text style={styles.infoText}>{t('pdf.doubleCrochet')}</Text>
-        </View>
+        {/* Glossary box - only show for Norwegian */}
+        {i18n.language === 'no' && (
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>{t('pdf.glossary')}</Text>
+            <Text style={styles.infoText}>{t('pdf.chainStitch')}</Text>
+            <Text style={styles.infoText}>{t('pdf.slipStitch')}</Text>
+            <Text style={styles.infoText}>{t('pdf.doubleCrochet')}</Text>
+          </View>
+        )}
 
         {/* Pattern instructions */}
         <Text style={styles.patternText}>{getPatternInstructions()}</Text>
