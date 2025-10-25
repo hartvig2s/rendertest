@@ -38,6 +38,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [selectedMotifType, setSelectedMotifType] = useState<string | null>(null);
   const [generatedPattern, setGeneratedPattern] = useState<any>(null);
   const [stitchInterpretation, setStitchInterpretation] = useState<'black_filled' | 'black_open'>('black_filled');
+  const [gridType, setGridType] = useState<'åpent' | 'tett'>('åpent');
   // const [draggingMotif, setDraggingMotif] = useState<string | null>(null);
   const [selectedMotifId, setSelectedMotifId] = useState<string | null>(null);
   const [customMotifs, setCustomMotifs] = useState<{id: string, name: string, imageData: string, category?: string}[]>([]);
@@ -82,6 +83,16 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [manualToolMode, setManualToolMode] = useState<'fill' | 'clear'>('fill');
   const [fillColor, setFillColor] = useState<'white' | 'red' | 'green' | 'blue'>('red');
   const [edgePattern, setEdgePattern] = useState<'none' | 'border-1' | 'border-2' | 'corner-triangles' | 'checkerboard-edges' | 'snake-pattern' | 'stepped-border' | 'checkerboard-2row'>('border-1');
+
+  // Improved yarn calculation based on empirical data
+  const calculateYarnRequired = (widthCm: number, heightCm: number, type: 'åpent' | 'tett') => {
+    const area = widthCm * heightCm; // cm²
+    // Consumption rates based on real finished bag data (g/cm²)
+    const consumptionRate = type === 'tett' ? 0.209 : 0.194;
+    const grams = area * consumptionRate;
+    const skeinsNeeded = Math.ceil(grams / 50); // For 50g skeins
+    return { grams, skeinsNeeded };
+  };
   const [gridWidth, setGridWidth] = useState<number>(project.width);
   const [gridHeight, setGridHeight] = useState<number>(project.height);
 
@@ -1226,32 +1237,28 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     // Total stitches = foundation + filled square stitches
     const totalStitches = foundationStitches + filledStitches;
 
-    // Yarn calculation:
-    // Grid scaling: Width: 1 cm per square, Height: 0.9 cm per square
-    // Foundation chains: 2cm per stitch
-    // Filled square stitches: 4cm per stitch
+    // Improved yarn calculation based on empirical data from finished bags
+    // Uses actual bag dimensions (width × height in cm) and grid type
     const gridScaleWidth = 1.0; // 10 grid units = 10 cm (width)
     const gridScaleHeight = 0.9; // 10 grid units = 9 cm (height)
-    // Average the scaling for yarn calculation (approximate)
-    const avgGridScale = (gridScaleWidth + gridScaleHeight) / 2;
-    const foundationYarnLength = foundationStitches * 2 * avgGridScale;
-    const filledYarnLength = filledStitches * 4 * avgGridScale;
-    const totalYarnLength = foundationYarnLength + filledYarnLength;
+    const widthCm = gridWidth * gridScaleWidth;
+    const heightCm = gridHeight * gridScaleHeight;
+
+    const yarnCalc = calculateYarnRequired(widthCm, heightCm, gridType);
 
     const pattern = {
       id: `pattern-${Date.now()}`,
       stitchInterpretation,
-      gridDimensions: `${gridWidth} × ${gridHeight} (${(gridWidth * gridScaleWidth).toFixed(1)} × ${(gridHeight * gridScaleHeight).toFixed(1)} cm)`,
+      gridType,
+      gridDimensions: `${gridWidth} × ${gridHeight} (${widthCm.toFixed(1)} × ${heightCm.toFixed(1)} cm)`,
       totalSquares: gridWidth * gridHeight,
       filledSquares,
       openSquares,
       foundationStitches,
       filledStitches,
       totalStitches,
-      foundationYarnLength,
-      filledYarnLength,
-      yarnLength: totalYarnLength,
-      skeinsNeeded: Math.ceil(totalYarnLength / 7500), // 75m = 7500cm per skein
+      yarnGrams: yarnCalc.grams,
+      skeinsNeeded: yarnCalc.skeinsNeeded,
       generatedAt: new Date().toLocaleString(),
       grid,
       gridMotifs
@@ -1282,9 +1289,26 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
     console.log('✅ Starting PDF export...');
 
-    // Calculate combined yarn requirements
-    const totalYarnLength = (frontPattern?.yarnLength || 0) + (backPattern?.yarnLength || 0);
-    const totalSkeins = Math.ceil(totalYarnLength / 7500);
+    // Calculate combined yarn requirements using improved area-based formula
+    const gridScaleWidth = 1.0;
+    const gridScaleHeight = 0.9;
+    const widthCm = gridWidth * gridScaleWidth;
+    const heightCm = gridHeight * gridScaleHeight;
+
+    let totalSkeins = 0;
+    let totalGrams = 0;
+
+    if (frontPattern) {
+      const frontYarn = calculateYarnRequired(widthCm, heightCm, gridType);
+      totalGrams += frontYarn.grams;
+      totalSkeins += frontYarn.skeinsNeeded;
+    }
+
+    if (backPattern) {
+      const backYarn = calculateYarnRequired(widthCm, heightCm, gridType);
+      totalGrams += backYarn.grams;
+      totalSkeins += backYarn.skeinsNeeded;
+    }
 
     try {
       // Show loading indicator
@@ -1797,6 +1821,15 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             >
               {t('grid.back')}
             </button>
+          </div>
+
+          {/* Grid Type Selector */}
+          <div className="mobile-control-row">
+            <label>{t('workspace.gridType')}</label>
+            <select value={gridType} onChange={(e) => setGridType(e.target.value as 'åpent' | 'tett')} className="grid-type-select">
+              <option value="åpent">{t('workspace.gridTypeOpen')}</option>
+              <option value="tett">{t('workspace.gridTypeFilled')}</option>
+            </select>
           </div>
 
           {/* Single Grid View */}
@@ -2364,6 +2397,14 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     >
                       {t('grid.invert')}
                     </button>
+                  </div>
+
+                  <div className="grid-type-section">
+                    <label>{t('workspace.gridType')}</label>
+                    <select value={gridType} onChange={(e) => setGridType(e.target.value as 'åpent' | 'tett')} className="grid-type-select">
+                      <option value="åpent">{t('workspace.gridTypeOpen')}</option>
+                      <option value="tett">{t('workspace.gridTypeFilled')}</option>
+                    </select>
                   </div>
 
                   <div className="grid-zoom-section">

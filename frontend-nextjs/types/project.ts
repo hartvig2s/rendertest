@@ -33,6 +33,7 @@ export interface Dimensions {
 
 export interface ProjectSettings {
   stitchInterpretation: StitchInterpretation;
+  gridType: GridType;
   showGrid: boolean;
   snapToGrid: boolean;
   autoSave: boolean;
@@ -40,4 +41,5 @@ export interface ProjectSettings {
 }
 
 export type StitchInterpretation = 'black_filled' | 'black_open';
+export type GridType = 'åpent' | 'tett';
 export type ExportFormat = 'pdf' | 'png' | 'json';
