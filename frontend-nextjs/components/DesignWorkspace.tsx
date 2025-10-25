@@ -33,7 +33,7 @@ interface DesignWorkspaceProps {
 }
 
 export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBack }) => {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const [placedMotifs, setPlacedMotifs] = useState<PlacedMotif[]>([]);
   const [selectedMotifType, setSelectedMotifType] = useState<string | null>(null);
   const [generatedPattern, setGeneratedPattern] = useState<any>(null);
@@ -1703,7 +1703,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         <div className="workspace-actions">
           <button
             className="btn btn-secondary"
-            onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLScqOCph9RL1wJwa3bglCA-fPsgcGnpMLZXOyG9jt5RRs1ZTpg/viewform?pli=1', '_blank')}
+            onClick={() => {
+              const feedbackForm = i18n.language === 'en'
+                ? 'https://docs.google.com/forms/d/e/1FAIpQLSfauXfua_1riWKDomPCHUxAW6rlreHRayEbcwl18MVfG0xdvA/viewform?usp=publish-editor'
+                : 'https://docs.google.com/forms/d/e/1FAIpQLScqOCph9RL1wJwa3bglCA-fPsgcGnpMLZXOyG9jt5RRs1ZTpg/viewform?pli=1';
+              window.open(feedbackForm, '_blank');
+            }}
             title={t('workspace.feedback')}
           >
             {t('workspace.feedback')}
