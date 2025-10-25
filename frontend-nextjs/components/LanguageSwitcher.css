@@ -1,21 +1,22 @@
 .language-switcher {
-  padding: 8px 16px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 1rem 2rem;
+  background-color: #B4BA8F;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 1.1rem;
   font-weight: 500;
   transition: all 0.2s ease;
   margin-left: 8px;
-  color: #333;
+  color: #FFFBF5;
 }
 
 .language-switcher:hover {
-  background-color: #e0e0e0;
-  border-color: #bbb;
+  background-color: #9BA377;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(180, 186, 143, 0.3);
 }
 
 .language-switcher:active {
-  background-color: #d0d0d0;
+  transform: translateY(0);
 }
