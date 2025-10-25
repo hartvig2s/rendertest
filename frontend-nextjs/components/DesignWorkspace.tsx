@@ -1687,13 +1687,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           <div className="mobile-header-row">
             <div className="mobile-project-info">
               <span className="mobile-project-name">{project.name}</span>
-              <span className="mobile-project-dims">Mål: {project.width} *{project.height} cm</span>
+              <span className="mobile-project-dims">{t('workspace.dimensions')} {project.width} *{project.height} cm</span>
             </div>
             <button
               className="btn-mobile-green"
               onClick={() => {
-                const newWidthCm = prompt('Bredde (cm):', (gridWidth * 1.0).toFixed(1));
-                const newHeightCm = prompt('Høyde (cm):', (gridHeight * 0.9).toFixed(1));
+                const newWidthCm = prompt(t('workspace.resizePromptWidth'), (gridWidth * 1.0).toFixed(1));
+                const newHeightCm = prompt(t('workspace.resizePromptHeight'), (gridHeight * 0.9).toFixed(1));
                 if (newWidthCm && newHeightCm) {
                   const widthCm = parseFloat(newWidthCm);
                   const heightCm = parseFloat(newHeightCm);
@@ -1703,18 +1703,18 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     setGridWidth(newWidth);
                     setGridHeight(newHeight);
                   } else {
-                    alert('Bredde må være mellom 8 og 200 cm, høyde må være mellom 7.2 og 180 cm');
+                    alert(t('workspace.resizeError'));
                   }
                 }
               }}
             >
-              Revider størrelse
+              {t('workspace.resizeButton')}
             </button>
           </div>
 
           {/* Garn (Color picker) row */}
           <div className="mobile-control-row">
-            <label>Garn:</label>
+            <label>{t('workspace.yarn')}</label>
             <div className="mobile-color-circles">
               <div
                 className={`color-circle ${fillColor === 'green' ? 'selected' : ''}`}
@@ -1742,7 +1742,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           {/* Bord + Invertér row */}
           <div className="mobile-control-row">
             <div className="mobile-row-group">
-              <label>Bord:</label>
+              <label>{t('grid.border')}</label>
               <button
                 className="btn-mobile-green"
                 onClick={() => {
@@ -1752,18 +1752,18 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   setEdgePattern(patterns[nextIndex]);
                 }}
               >
-                {edgePattern === 'none' ? 'Ingen' :
-                 edgePattern === 'border-1' ? 'Enkel kant' :
-                 edgePattern === 'border-2' ? 'Dobbel kant' :
-                 edgePattern === 'corner-triangles' ? 'Hjørnetriangel' :
-                 edgePattern === 'checkerboard-edges' ? 'Sjakkmønster' :
-                 edgePattern === 'snake-pattern' ? 'Celtic weave' :
-                 edgePattern === 'stepped-border' ? 'Trappekant' :
-                 'Mini sjakk'}
+                {edgePattern === 'none' ? t('borderPatterns.none') :
+                 edgePattern === 'border-1' ? t('borderPatterns.simple') :
+                 edgePattern === 'border-2' ? t('borderPatterns.double') :
+                 edgePattern === 'corner-triangles' ? t('borderPatterns.cornerTriangle') :
+                 edgePattern === 'checkerboard-edges' ? t('borderPatterns.checkerboard') :
+                 edgePattern === 'snake-pattern' ? t('borderPatterns.celticWeave') :
+                 edgePattern === 'stepped-border' ? t('borderPatterns.stairStep') :
+                 t('borderPatterns.miniCheckerboard')}
               </button>
             </div>
             <button className="btn-mobile-green" onClick={toggleStitchInterpretation}>
-              Invertér
+              {t('grid.invert')}
             </button>
           </div>
 
@@ -1773,13 +1773,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               className={`btn-mobile-toggle ${currentSide === 'front' ? 'active' : ''}`}
               onClick={() => setCurrentSide('front')}
             >
-              Forside
+              {t('grid.front')}
             </button>
             <button
               className={`btn-mobile-toggle ${currentSide === 'back' ? 'active' : ''}`}
               onClick={() => setCurrentSide('back')}
             >
-              Bakside
+              {t('grid.back')}
             </button>
           </div>
 
@@ -1795,11 +1795,11 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           {/* Motif Section */}
           <div className="mobile-motif-section">
             <div className="mobile-section-header">
-              <span>Motiver</span>
+              <span>{t('motifs.library')}</span>
             </div>
 
             <div className="mobile-category-row">
-              <label>Kategori:</label>
+              <label>{t('motifs.category')}</label>
               <button
                 className="btn-mobile-category"
                 onClick={() => {
@@ -1809,11 +1809,11 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   setSelectedCategory(categories[nextIndex]);
                 }}
               >
-                {selectedCategory === 'flowers' ? 'Blomster' :
-                 selectedCategory === 'sea' ? 'Hav' :
-                 selectedCategory === 'birds' ? 'Fugler' :
-                 selectedCategory === 'sport' ? 'Sport' :
-                 selectedCategory === 'other' ? 'Andre' : 'Alle motiver'}
+                {selectedCategory === 'flowers' ? t('motifs.categories.flowers') :
+                 selectedCategory === 'sea' ? t('motifs.categories.sea') :
+                 selectedCategory === 'birds' ? t('motifs.categories.birds') :
+                 selectedCategory === 'sport' ? t('motifs.categories.sport') :
+                 selectedCategory === 'other' ? t('motifs.categories.other') : t('motifs.categories.all')}
               </button>
             </div>
 
@@ -1845,7 +1845,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 className="btn-mobile-green"
                 onClick={() => setShowTextInput(!showTextInput)}
               >
-                Legg til tekst
+                {t('motifs.addText')}
               </button>
               <input
                 type="file"
@@ -1855,7 +1855,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 id="motif-upload-mobile"
               />
               <label htmlFor="motif-upload-mobile" className="btn-mobile-green">
-                Last opp motiv
+                {t('motifs.uploadMotif')}
               </label>
             </div>
 
@@ -1866,7 +1866,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
-                  placeholder="Skriv inn tekst for motiv..."
+                  placeholder={t('motifs.textPlaceholder')}
                   className="text-input"
                   maxLength={50}
                   onKeyDown={(e) => {
@@ -1885,7 +1885,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     onClick={() => createTextMotif(textInput)}
                     disabled={!textInput.trim()}
                   >
-                    Opprett
+                    {t('motifs.create')}
                   </button>
                   <button
                     className="btn btn-small btn-secondary"
@@ -1894,7 +1894,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       setTextInput('');
                     }}
                   >
-                    Avbryt
+                    {t('motifs.cancel')}
                   </button>
                 </div>
               </div>
@@ -1903,7 +1903,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             {/* Display created text and uploaded motifs (exclude library motifs) */}
             {customMotifs.filter(m => !m.id.startsWith('library-')).length > 0 && (
               <div className="mobile-custom-motifs">
-                <h4 className="mobile-section-title">Mine motiver</h4>
+                <h4 className="mobile-section-title">{t('motifs.custom')}</h4>
                 <div className="mobile-motif-grid">
                   {customMotifs
                     .filter(customMotif => !customMotif.id.startsWith('library-'))
@@ -1936,7 +1936,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               onClick={handleExportPattern}
               disabled={!generatedPattern && !backSidePattern}
             >
-              Eksporter oppskrift
+              {t('workspace.export')}
             </button>
           </div>
 
@@ -1980,7 +1980,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 {/* Compact Controls */}
                 <div className="mobile-compact-controls">
                   <div className="compact-row">
-                    <span className="compact-label">Størrelse:</span>
+                    <span className="compact-label">{t('motifs.size')}</span>
                     <input
                       type="range"
                       min="0.1"
@@ -1994,7 +1994,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   </div>
 
                   <div className="compact-row">
-                    <span className="compact-label">Balanse:</span>
+                    <span className="compact-label">{t('motifs.threshold')}</span>
                     <input
                       type="range"
                       min="0"
@@ -2027,7 +2027,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                         setMobileSelectedMotif(null);
                       }}
                     >
-                      Dupliser
+                      {t('motifs.duplicate')}
                     </button>
                     <button
                       className="compact-btn danger"
@@ -2037,7 +2037,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                         setMobileSelectedMotif(null);
                       }}
                     >
-                      Fjern
+                      {t('motifs.remove')}
                     </button>
                     <button
                       className="compact-btn close"
@@ -2196,16 +2196,16 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           </div>
 
           <div className="manual-fill-section">
-            <h4>Manuelt fylleverktøy</h4>
-            <p className="tool-description">Klikk på rutenettceller for å fylle eller tømme dem manuelt</p>
+            <h4>{t('grid.manual')}</h4>
+            <p className="tool-description">{t('grid.manualDescription')}</p>
 
             <div className="manual-fill-controls">
               <button
                 className={`btn ${manualFillMode ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => setManualFillMode(!manualFillMode)}
-                title={manualFillMode ? "Avslutt manuell fyllmodus" : "Start manuell fyllmodus"}
+                title={manualFillMode ? t('grid.endFillMode') : t('grid.startFillMode')}
               >
-                {manualFillMode ? 'Avslutt fyllmodus' : 'Start fyllmodus'}
+                {manualFillMode ? t('grid.endFillMode') : t('grid.startFillMode')}
               </button>
 
               {manualFillMode && (
@@ -2214,19 +2214,19 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     <button
                       className={`btn btn-small ${manualToolMode === 'fill' ? 'btn-primary' : 'btn-outline'}`}
                       onClick={() => setManualToolMode('fill')}
-                      title="Fyll tomme celler"
+                      title={t('grid.fillEmpty')}
                     >
-                      Fyll
+                      {t('grid.fill')}
                     </button>
                     <button
                       className={`btn btn-small ${manualToolMode === 'clear' ? 'btn-primary' : 'btn-outline'}`}
                       onClick={() => setManualToolMode('clear')}
-                      title="Tøm fylte celler"
+                      title={t('grid.emptyFilled')}
                     >
-                      Tøm
+                      {t('grid.empty')}
                     </button>
                   </div>
-                  <p><small>{manualToolMode === 'fill' ? 'Klikk for å fylle celler' : 'Klikk for å tømme celler'}</small></p>
+                  <p><small>{manualToolMode === 'fill' ? t('grid.fillInstruction') : t('grid.emptyInstruction')}</small></p>
                 </div>
               )}
             </div>
@@ -2273,13 +2273,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               <div className="dual-grid-view">
                 <div className="grid-controls">
                   <div className="grid-size-info-section">
-                    <label>Størrelse:</label>
+                    <label>{t('motifs.size')}</label>
                     <div className="grid-size-value">{(gridWidth * 1.0).toFixed(0)} * {(gridHeight * 0.9).toFixed(0)} cm</div>
                     <button
                       className="btn btn-small btn-secondary"
                       onClick={() => {
-                        const newWidthCm = prompt('Bredde (cm):', (gridWidth * 1.0).toFixed(1));
-                        const newHeightCm = prompt('Høyde (cm):', (gridHeight * 0.9).toFixed(1));
+                        const newWidthCm = prompt(t('workspace.resizePromptWidth'), (gridWidth * 1.0).toFixed(1));
+                        const newHeightCm = prompt(t('workspace.resizePromptHeight'), (gridHeight * 0.9).toFixed(1));
                         if (newWidthCm && newHeightCm) {
                           const widthCm = parseFloat(newWidthCm);
                           const heightCm = parseFloat(newHeightCm);
@@ -2559,7 +2559,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                           </div>
 
                           <div className="motif-size-control">
-                            <label>Størrelse:</label>
+                            <label>{t('motifs.size')}</label>
                             <div className="size-slider-container">
                               <input
                                 type="range"
@@ -2569,14 +2569,14 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                                 value={motif.size}
                                 onChange={(e) => handleMotifResize(motif.id, parseFloat(e.target.value))}
                                 className="size-slider"
-                                title={`Nåværende størrelse: ${(motif.size * 100).toFixed(0)}%`}
+                                title={`${t('motifs.size')} ${(motif.size * 100).toFixed(0)}%`}
                               />
                             </div>
                           </div>
 
                           {/* Threshold Control */}
                           <div className="motif-threshold-control">
-                            <label>Balanse:</label>
+                            <label>{t('motifs.threshold')}</label>
                             <div className="size-slider-container">
                               <input
                                 type="range"
@@ -2586,28 +2586,28 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                                 value={motif.threshold}
                                 onChange={(e) => handleMotifThreshold(motif.id, parseInt(e.target.value))}
                                 className="size-slider"
-                                title={`Terskel: ${motif.threshold} (lavere = mer svart)`}
+                                title={`${t('motifs.threshold')} ${motif.threshold}`}
                               />
                             </div>
                           </div>
 
                           {/* Flip Controls */}
                           <div className="motif-flip-controls">
-                            <label>Vend:</label>
+                            <label>{t('motifs.flip')}</label>
                             <div className="flip-buttons">
                               <button
                                 className={`btn btn-small ${motif.flipHorizontal ? 'btn-primary' : 'btn-outline'}`}
                                 onClick={() => handleMotifFlip(motif.id, 'horizontal')}
-                                title="Vend horisontalt"
+                                title={t('motifs.flipHorizontal')}
                               >
-                                Horisontal
+                                {t('motifs.flipHorizontal')}
                               </button>
                               <button
                                 className={`btn btn-small ${motif.flipVertical ? 'btn-primary' : 'btn-outline'}`}
                                 onClick={() => handleMotifFlip(motif.id, 'vertical')}
-                                title="Vend vertikalt"
+                                title={t('motifs.flipVertical')}
                               >
-                                Vertikal
+                                {t('motifs.flipVertical')}
                               </button>
                             </div>
                           </div>
@@ -2616,16 +2616,16 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                             <button
                               className="btn btn-small btn-secondary"
                               onClick={() => handleMotifDuplicate(motif.id)}
-                              title={`Dupliser ${motif.name} motiv`}
+                              title={`${t('motifs.duplicate')} ${motif.name}`}
                             >
-                              Dupliser
+                              {t('motifs.duplicate')}
                             </button>
                             <button
                               className="btn btn-small btn-danger"
                               onClick={() => handleMotifRemove(motif.id)}
-                              title={`Fjern ${motif.name} motiv`}
+                              title={`${t('motifs.remove')} ${motif.name}`}
                             >
-                              Fjern
+                              {t('motifs.remove')}
                             </button>
                           </div>
                         </>
