@@ -77,7 +77,9 @@
     "flipVertical": "Vend vertikalt",
     "duplicate": "Dupliser",
     "remove": "Fjern",
-    "noMotifsPlaced": "Ingen motiver plassert"
+    "noMotifsPlaced": "Ingen motiver plassert",
+    "clearAll": "Tøm alt",
+    "clearAllDescription": "Fjern alle motiver, manuelle fylinger og grenser"
   },
   "grid": {
     "manual": "Manuelt fylleverktøy",

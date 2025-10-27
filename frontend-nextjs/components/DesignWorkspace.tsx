@@ -1185,6 +1185,26 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     }
   };
 
+  const handleClearAll = () => {
+    // Clear all motifs from both sides
+    setPlacedMotifs([]);
+    setBackSideMotifs([]);
+    setSelectedMotifId(null);
+
+    // Clear manual fills from both sides
+    setManualFillCells({
+      front: new Map(),
+      back: new Map()
+    });
+
+    // Reset edge pattern to default
+    setEdgePattern('border-1');
+
+    // Clear generated patterns
+    setGeneratedPattern(null);
+    setBackSidePattern(null);
+  };
+
   const handleGeneratePattern = async () => {
     // Convert percentage positions to grid coordinates
     const currentMotifs = getCurrentMotifs();
@@ -1873,6 +1893,18 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               {t('grid.back')}
             </button>
           </div>
+
+          {/* Clear All Button - Mobile */}
+          {(placedMotifs.length > 0 || backSideMotifs.length > 0 || manualFillCells.front.size > 0 || manualFillCells.back.size > 0 || edgePattern !== 'border-1') && (
+            <button
+              onClick={handleClearAll}
+              className="btn btn-danger"
+              style={{ width: '100%', marginTop: '10px', marginBottom: '10px' }}
+              title={t('motifs.clearAllDescription')}
+            >
+              {t('motifs.clearAll')}
+            </button>
+          )}
 
           {/* Single Grid View */}
           <div className="mobile-grid-container">
@@ -2716,6 +2748,18 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
               </div>
             ) : (
               <p className="no-motifs">{t('grid.noMotifsOnSide', { side: currentSide === 'front' ? t('grid.front') : t('grid.back') })}</p>
+            )}
+
+            {/* Clear All Button */}
+            {(placedMotifs.length > 0 || backSideMotifs.length > 0 || manualFillCells.front.size > 0 || manualFillCells.back.size > 0 || edgePattern !== 'border-1') && (
+              <button
+                onClick={handleClearAll}
+                className="btn btn-danger"
+                style={{ width: '100%', marginTop: '15px' }}
+                title={t('motifs.clearAllDescription')}
+              >
+                {t('motifs.clearAll')}
+              </button>
             )}
           </div>
         </aside>

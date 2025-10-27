@@ -77,7 +77,9 @@
     "flipVertical": "Flip vertically",
     "duplicate": "Duplicate",
     "remove": "Remove",
-    "noMotifsPlaced": "No motifs placed"
+    "noMotifsPlaced": "No motifs placed",
+    "clearAll": "Clear all",
+    "clearAllDescription": "Remove all motifs, manual fills, and borders"
   },
   "grid": {
     "manual": "Manual fill tool",
