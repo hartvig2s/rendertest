@@ -1828,15 +1828,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             </button>
           </div>
 
-          {/* Grid Type Selector */}
-          <div className="mobile-control-row">
-            <label>{t('workspace.gridType')}</label>
-            <select value={gridType} onChange={(e) => setGridType(e.target.value as 'åpent' | 'tett')} className="grid-type-select">
-              <option value="åpent">{t('workspace.gridTypeOpen')}</option>
-              <option value="tett">{t('workspace.gridTypeFilled')}</option>
-            </select>
-          </div>
-
           {/* Single Grid View */}
           <div className="mobile-grid-container">
             {currentSide === 'front' ? (
@@ -2402,14 +2393,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     >
                       {t('grid.invert')}
                     </button>
-                  </div>
-
-                  <div className="grid-type-section">
-                    <label>{t('workspace.gridType')}</label>
-                    <select value={gridType} onChange={(e) => setGridType(e.target.value as 'åpent' | 'tett')} className="grid-type-select">
-                      <option value="åpent">{t('workspace.gridTypeOpen')}</option>
-                      <option value="tett">{t('workspace.gridTypeFilled')}</option>
-                    </select>
                   </div>
 
                   <div className="grid-zoom-section">
