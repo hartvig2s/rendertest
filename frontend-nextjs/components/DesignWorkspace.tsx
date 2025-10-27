@@ -34,6 +34,10 @@ interface DesignWorkspaceProps {
 
 export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBack }) => {
   const { t, i18n } = useTranslation('common');
+  const [projectName, setProjectName] = useState<string>(project.name);
+  const [isEditingName, setIsEditingName] = useState<boolean>(false);
+  const [showExportNameDialog, setShowExportNameDialog] = useState<boolean>(false);
+  const [exportName, setExportName] = useState<string>(projectName);
   const [placedMotifs, setPlacedMotifs] = useState<PlacedMotif[]>([]);
   const [selectedMotifType, setSelectedMotifType] = useState<string | null>(null);
   const [generatedPattern, setGeneratedPattern] = useState<any>(null);
@@ -1271,7 +1275,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     setStitchInterpretation(prev => prev === 'black_filled' ? 'black_open' : 'black_filled');
   };
 
-  const handleExportPattern = async () => {
+  const handleExportPattern = () => {
     console.log('🎯 Export button clicked!');
     const frontPattern = generatedPattern;
     const backPattern = backSidePattern;
@@ -1287,7 +1291,16 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       return;
     }
 
-    console.log('✅ Starting PDF export...');
+    // Update export name from current project name
+    setExportName(projectName);
+    // Show name dialog
+    setShowExportNameDialog(true);
+  };
+
+  const handleConfirmExport = async (nameForExport: string) => {
+    console.log('✅ Starting PDF export with name:', nameForExport);
+    const frontPattern = generatedPattern;
+    const backPattern = backSidePattern;
 
     // Calculate combined yarn requirements using improved area-based formula
     const gridScaleWidth = 1.0;
@@ -1431,7 +1444,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       // Generate PDF with grid SVGs
       const pdfDoc = (
         <PatternPDF
-          projectName={project.name}
+          projectName={nameForExport}
           gridWidth={gridWidth}
           gridHeight={gridHeight}
           totalSkeins={totalSkeins}
@@ -1451,7 +1464,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${project.name.replace(/[^a-zA-Z0-9]/g, '_')}_oppskrift.pdf`;
+      link.download = `${nameForExport.replace(/[^a-zA-Z0-9]/g, '_')}_oppskrift.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1462,7 +1475,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         console.log('🎯 Plausible: Tracking PDF Export event');
         (window as any).plausible('PDF Export', {
           props: {
-            projectName: project.name,
+            projectName: nameForExport,
             gridSize: `${gridWidth}x${gridHeight}`,
             hasFront: !!frontPattern,
             hasBack: !!backPattern
@@ -1698,7 +1711,40 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     <div className="design-workspace">
       <header className="workspace-header">
         <div className="workspace-title">
-          <h1 data-testid="project-title">{project.name}</h1>
+          {isEditingName ? (
+            <input
+              type="text"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              onBlur={() => setIsEditingName(false)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') setIsEditingName(false);
+                if (e.key === 'Escape') {
+                  setProjectName(projectName);
+                  setIsEditingName(false);
+                }
+              }}
+              autoFocus
+              className="project-name-input"
+              style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                border: 'none',
+                background: 'transparent',
+                padding: '0',
+                fontFamily: 'inherit',
+                width: '100%'
+              }}
+            />
+          ) : (
+            <h1
+              data-testid="project-title"
+              onClick={() => setIsEditingName(true)}
+              style={{ cursor: 'pointer', margin: 0 }}
+            >
+              {projectName}
+            </h1>
+          )}
         </div>
         <div className="workspace-actions">
           <button
@@ -2675,6 +2721,88 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         </aside>
 
       </div>
+      )}
+
+      {/* Export Name Dialog Modal */}
+      {showExportNameDialog && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            padding: '30px',
+            maxWidth: '500px',
+            width: '90%',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+          }}>
+            <h2 style={{ marginTop: 0, marginBottom: '20px' }}>Enter Project Name</h2>
+            <input
+              type="text"
+              value={exportName}
+              onChange={(e) => setExportName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleConfirmExport(exportName || 'Untitled Design');
+                  setShowExportNameDialog(false);
+                }
+              }}
+              autoFocus
+              placeholder="Project name..."
+              style={{
+                width: '100%',
+                padding: '10px',
+                fontSize: '1rem',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                marginBottom: '20px',
+                boxSizing: 'border-box'
+              }}
+            />
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setShowExportNameDialog(false)}
+                style={{
+                  padding: '10px 20px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  backgroundColor: '#f5f5f5',
+                  cursor: 'pointer',
+                  fontSize: '1rem'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  handleConfirmExport(exportName || 'Untitled Design');
+                  setShowExportNameDialog(false);
+                }}
+                style={{
+                  padding: '10px 20px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  backgroundColor: '#B4BA8F',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  fontWeight: '500'
+                }}
+              >
+                Export
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

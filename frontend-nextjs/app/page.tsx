@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ProjectCreation } from '@/components/ProjectCreation'
 import { DesignWorkspace } from '@/components/DesignWorkspace'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
@@ -14,29 +13,23 @@ interface Project {
 
 export default function Home() {
   const { t } = useTranslation('common')
-  const [currentView, setCurrentView] = useState<'home' | 'create' | 'design'>('home')
+  const [currentView, setCurrentView] = useState<'home' | 'design'>('home')
   const [currentProject, setCurrentProject] = useState<Project | null>(null)
 
-  const handleNewProject = () => {
-    setCurrentView('create')
-  }
-
-  const handleProjectCreated = (project: Project) => {
-    setCurrentProject(project)
+  const handleStartDesign = () => {
+    // Create default project
+    const defaultProject: Project = {
+      name: 'Untitled Design',
+      width: 30,
+      height: 35
+    }
+    setCurrentProject(defaultProject)
     setCurrentView('design')
   }
 
   const handleBackToHome = () => {
     setCurrentView('home')
     setCurrentProject(null)
-  }
-
-  const handleCancelCreate = () => {
-    setCurrentView('home')
-  }
-
-  if (currentView === 'create') {
-    return <ProjectCreation onProjectCreated={handleProjectCreated} onCancel={handleCancelCreate} />
   }
 
   if (currentView === 'design' && currentProject) {
@@ -53,7 +46,7 @@ export default function Home() {
         <p className="landing-subtitle">
           {t('home.subtitle')}
         </p>
-        <button className="btn-landing" data-testid="new-project" onClick={handleNewProject}>
+        <button className="btn-landing" data-testid="new-project" onClick={handleStartDesign}>
           {t('home.startButton')}
         </button>
       </div>
