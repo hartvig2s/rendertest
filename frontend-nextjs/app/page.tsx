@@ -17,9 +17,9 @@ export default function Home() {
   const [currentProject, setCurrentProject] = useState<Project | null>(null)
 
   const handleStartDesign = () => {
-    // Create default project
+    // Create default project with language-specific name
     const defaultProject: Project = {
-      name: 'Untitled Design',
+      name: t('workspace.untitledProject'),
       width: 30,
       height: 35
     }

@@ -2745,19 +2745,19 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             width: '90%',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
           }}>
-            <h2 style={{ marginTop: 0, marginBottom: '20px' }}>Enter Project Name</h2>
+            <h2 style={{ marginTop: 0, marginBottom: '20px' }}>{t('workspace.exportDialogTitle')}</h2>
             <input
               type="text"
               value={exportName}
               onChange={(e) => setExportName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleConfirmExport(exportName || 'Untitled Design');
+                  handleConfirmExport(exportName || t('workspace.untitledProject'));
                   setShowExportNameDialog(false);
                 }
               }}
               autoFocus
-              placeholder="Project name..."
+              placeholder={t('workspace.exportDialogPlaceholder')}
               style={{
                 width: '100%',
                 padding: '10px',
@@ -2780,11 +2780,11 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   fontSize: '1rem'
                 }}
               >
-                Cancel
+                {t('workspace.exportDialogCancel')}
               </button>
               <button
                 onClick={() => {
-                  handleConfirmExport(exportName || 'Untitled Design');
+                  handleConfirmExport(exportName || t('workspace.untitledProject'));
                   setShowExportNameDialog(false);
                 }}
                 style={{
@@ -2798,7 +2798,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   fontWeight: '500'
                 }}
               >
-                Export
+                {t('workspace.exportDialogExport')}
               </button>
             </div>
           </div>

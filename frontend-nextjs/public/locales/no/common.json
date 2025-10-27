@@ -37,7 +37,12 @@
     "resizePromptWidth": "Bredde (cm):",
     "resizePromptHeight": "Høyde (cm):",
     "resizeError": "Bredde må være mellom 8 og 200 cm, høyde må være mellom 7.2 og 180 cm",
-    "editDimensions": "Endre rutenettets størrelse"
+    "editDimensions": "Endre rutenettets størrelse",
+    "untitledProject": "Ikke navngitt prosjekt",
+    "exportDialogTitle": "Skriv inn prosjektnavn",
+    "exportDialogPlaceholder": "Prosjektnavn...",
+    "exportDialogCancel": "Avbryt",
+    "exportDialogExport": "Eksporter"
   },
   "colors": {
     "green": "Grønn",

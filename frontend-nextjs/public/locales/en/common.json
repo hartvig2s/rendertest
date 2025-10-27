@@ -37,7 +37,12 @@
     "resizePromptWidth": "Width (cm):",
     "resizePromptHeight": "Height (cm):",
     "resizeError": "Width must be between 8 and 200 cm, height must be between 7.2 and 180 cm",
-    "editDimensions": "Edit dimensions"
+    "editDimensions": "Edit dimensions",
+    "untitledProject": "Untitled Design",
+    "exportDialogTitle": "Enter Project Name",
+    "exportDialogPlaceholder": "Project name...",
+    "exportDialogCancel": "Cancel",
+    "exportDialogExport": "Export"
   },
   "colors": {
     "green": "Green",
