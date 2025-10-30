@@ -2217,9 +2217,9 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             </>
           )}
 
-          <div className="upload-section">
-            <h4>{t('motifs.custom')}</h4>
+          <h3>{t('motifs.myMotifs')}</h3>
 
+          <div className="upload-section">
             <div className="motif-creation-buttons">
               <input
                 type="file"

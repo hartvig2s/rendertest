@@ -53,6 +53,7 @@
   "motifs": {
     "library": "Motif Library",
     "custom": "My Motifs",
+    "myMotifs": "My motifs",
     "category": "Category:",
     "categories": {
       "all": "All motifs",
