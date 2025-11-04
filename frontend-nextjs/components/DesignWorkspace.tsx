@@ -6,6 +6,22 @@ import { useTranslation } from 'react-i18next';
 import { PatternPDF } from './PatternPDF';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { motifFiles } from '@/lib/motifs';
+import {
+  PANEL_WIDTHS,
+  GRID_ZOOM,
+  MOTIF_SIZING,
+  YARN_CALCULATION,
+  HISTORY,
+  STITCH_MODES,
+  GRID_TYPES,
+  BORDER_PATTERNS,
+  DEFAULT_BORDER_PATTERN,
+  FILL_COLORS,
+  DEFAULT_FILL_COLOR,
+  FILL_MODES,
+  SIDES,
+  GRID_DEFAULTS,
+} from '@/lib/constants';
 
 interface Project {
   name: string;
@@ -41,29 +57,29 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [placedMotifs, setPlacedMotifs] = useState<PlacedMotif[]>([]);
   const [selectedMotifType, setSelectedMotifType] = useState<string | null>(null);
   const [generatedPattern, setGeneratedPattern] = useState<any>(null);
-  const [stitchInterpretation, setStitchInterpretation] = useState<'black_filled' | 'black_open'>('black_filled');
-  const [gridType, setGridType] = useState<'åpent' | 'tett'>('åpent');
+  const [stitchInterpretation, setStitchInterpretation] = useState<'black_filled' | 'black_open'>(STITCH_MODES.BLACK_FILLED);
+  const [gridType, setGridType] = useState<'åpent' | 'tett'>(GRID_TYPES.ÅPENT);
   // const [draggingMotif, setDraggingMotif] = useState<string | null>(null);
   const [selectedMotifId, setSelectedMotifId] = useState<string | null>(null);
   const [customMotifs, setCustomMotifs] = useState<{id: string, name: string, imageData: string, category?: string}[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('flowers');
   const [textInput, setTextInput] = useState<string>('');
   const [showTextInput, setShowTextInput] = useState<boolean>(false);
-  const [leftPanelWidth, setLeftPanelWidth] = useState<number>(300);
-  const [rightPanelWidth, setRightPanelWidth] = useState<number>(300);
+  const [leftPanelWidth, setLeftPanelWidth] = useState<number>(PANEL_WIDTHS.LEFT_PANEL);
+  const [rightPanelWidth, setRightPanelWidth] = useState<number>(PANEL_WIDTHS.RIGHT_PANEL);
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const [autoUpdating, setAutoUpdating] = useState<boolean>(false);
   const [gridDragging, setGridDragging] = useState<string | null>(null);
   // const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [gridZoom, setGridZoom] = useState<number>(1.0);
-  const [currentSide, setCurrentSide] = useState<'front' | 'back'>('front');
+  const [gridZoom, setGridZoom] = useState<number>(GRID_ZOOM.DEFAULT);
+  const [currentSide, setCurrentSide] = useState<'front' | 'back'>(SIDES.FRONT);
   const [backSideMotifs, setBackSideMotifs] = useState<PlacedMotif[]>([]);
   const [backSidePattern, setBackSidePattern] = useState<any>(null);
   const [dragOverSide, setDragOverSide] = useState<'front' | 'back' | null>(null);
 
   // Touch/pinch zoom state
   const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
-  const [initialPinchZoom, setInitialPinchZoom] = useState<number>(1.25);
+  const [initialPinchZoom, setInitialPinchZoom] = useState<number>(GRID_ZOOM.INITIAL_PINCH);
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -84,17 +100,17 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     front: new Map<string, string>(),
     back: new Map<string, string>()
   });
-  const [manualToolMode, setManualToolMode] = useState<'fill' | 'clear'>('fill');
-  const [fillColor, setFillColor] = useState<'white' | 'red' | 'green' | 'blue'>('red');
-  const [edgePattern, setEdgePattern] = useState<'none' | 'border-1' | 'border-2' | 'corner-triangles' | 'checkerboard-edges' | 'snake-pattern' | 'stepped-border' | 'checkerboard-2row'>('border-1');
+  const [manualToolMode, setManualToolMode] = useState<'fill' | 'clear'>(FILL_MODES.FILL);
+  const [fillColor, setFillColor] = useState<'white' | 'red' | 'green' | 'blue'>(DEFAULT_FILL_COLOR);
+  const [edgePattern, setEdgePattern] = useState<'none' | 'border-1' | 'border-2' | 'corner-triangles' | 'checkerboard-edges' | 'snake-pattern' | 'stepped-border' | 'checkerboard-2row'>(DEFAULT_BORDER_PATTERN);
 
   // Improved yarn calculation based on empirical data
   const calculateYarnRequired = (widthCm: number, heightCm: number, type: 'åpent' | 'tett') => {
     const area = widthCm * heightCm; // cm²
     // Consumption rates based on real finished bag data (g/cm²)
-    const consumptionRate = type === 'tett' ? 0.209 : 0.194;
+    const consumptionRate = type === 'tett' ? YARN_CALCULATION.CONSUMPTION_RATE_TETT : YARN_CALCULATION.CONSUMPTION_RATE_ÅPENT;
     const grams = area * consumptionRate;
-    const skeinsNeeded = Math.ceil(grams / 50); // For 50g skeins
+    const skeinsNeeded = Math.ceil(grams / YARN_CALCULATION.SKEIN_WEIGHT);
     return { grams, skeinsNeeded };
   };
   const [gridWidth, setGridWidth] = useState<number>(project.width);
@@ -109,11 +125,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
   // Helper function to calculate maximum motif size based on grid dimensions
-  // 120% = maximum allowed size for illustrations
-  const getMaxMotifSize = () => {
-    // Maximum size is 120% (1.2)
-    return 1.2;
-  };
+  const getMaxMotifSize = () => MOTIF_SIZING.MAX_SIZE;
 
   // Save current state to history
   const saveToHistory = () => {
@@ -130,8 +142,8 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(currentState);
 
-    // Limit history to last 50 states
-    if (newHistory.length > 50) {
+    // Limit history to max states
+    if (newHistory.length > HISTORY.MAX_STATES) {
       newHistory.shift();
     } else {
       setHistoryIndex(historyIndex + 1);
