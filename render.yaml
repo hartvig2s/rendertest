@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: heklemønster-designverktøy
+    name: superkraft
     env: static
     rootDir: frontend-nextjs
     buildCommand: npm install && npm run build
