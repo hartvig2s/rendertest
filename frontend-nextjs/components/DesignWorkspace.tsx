@@ -22,6 +22,10 @@ import {
   SIDES,
   GRID_DEFAULTS,
 } from '@/lib/constants';
+import { useMotifManagement } from '@/hooks/useMotifManagement';
+import { useGridState } from '@/hooks/useGridState';
+import { useManualFill } from '@/hooks/useManualFill';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 interface Project {
   name: string;
@@ -50,19 +54,45 @@ interface DesignWorkspaceProps {
 
 export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBack }) => {
   const { t, i18n } = useTranslation('common');
+
+  // Initialize custom hooks for state management
+  const motifManager = useMotifManagement();
+  const gridManager = useGridState(project.width, project.height);
+  const fillManager = useManualFill();
+  const mobileDetector = useMobileDetection();
+
+  // Create aliases for hook values - seamlessly replacing state variables
+  const placedMotifs = motifManager.placedMotifs;
+  const backSideMotifs = motifManager.backSideMotifs;
+  const customMotifs = motifManager.customMotifs;
+  const selectedMotifType = motifManager.selectedMotifType;
+  const selectedMotifId = motifManager.selectedMotifId;
+  const selectedCategory = motifManager.selectedCategory;
+
+  const gridZoom = gridManager.gridZoom;
+  const currentSide = gridManager.currentSide;
+  const gridWidth = gridManager.gridWidth;
+  const gridHeight = gridManager.gridHeight;
+
+  const manualFillMode = fillManager.manualFillMode;
+  const manualFillCells = fillManager.manualFillCells;
+  const manualToolMode = fillManager.manualToolMode;
+  const fillColor = fillManager.fillColor;
+
+  const isMobile = mobileDetector.isMobile;
+  const showMobileMotifPanel = mobileDetector.showMobileMotifPanel;
+  const showMobileControlPanel = mobileDetector.showMobileControlPanel;
+  const mobileSelectedMotif = mobileDetector.mobileSelectedMotif;
+  const showMotifControlModal = mobileDetector.showMotifControlModal;
+
+  // Regular state for project and UI elements
   const [projectName, setProjectName] = useState<string>(project.name);
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
   const [showExportNameDialog, setShowExportNameDialog] = useState<boolean>(false);
   const [exportName, setExportName] = useState<string>(projectName);
-  const [placedMotifs, setPlacedMotifs] = useState<PlacedMotif[]>([]);
-  const [selectedMotifType, setSelectedMotifType] = useState<string | null>(null);
   const [generatedPattern, setGeneratedPattern] = useState<any>(null);
   const [stitchInterpretation, setStitchInterpretation] = useState<'black_filled' | 'black_open'>(STITCH_MODES.BLACK_FILLED);
   const [gridType, setGridType] = useState<'åpent' | 'tett'>(GRID_TYPES.ÅPENT);
-  // const [draggingMotif, setDraggingMotif] = useState<string | null>(null);
-  const [selectedMotifId, setSelectedMotifId] = useState<string | null>(null);
-  const [customMotifs, setCustomMotifs] = useState<{id: string, name: string, imageData: string, category?: string}[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('flowers');
   const [textInput, setTextInput] = useState<string>('');
   const [showTextInput, setShowTextInput] = useState<boolean>(false);
   const [leftPanelWidth, setLeftPanelWidth] = useState<number>(PANEL_WIDTHS.LEFT_PANEL);
@@ -70,10 +100,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const [autoUpdating, setAutoUpdating] = useState<boolean>(false);
   const [gridDragging, setGridDragging] = useState<string | null>(null);
-  // const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [gridZoom, setGridZoom] = useState<number>(GRID_ZOOM.DEFAULT);
-  const [currentSide, setCurrentSide] = useState<'front' | 'back'>(SIDES.FRONT);
-  const [backSideMotifs, setBackSideMotifs] = useState<PlacedMotif[]>([]);
   const [backSidePattern, setBackSidePattern] = useState<any>(null);
   const [dragOverSide, setDragOverSide] = useState<'front' | 'back' | null>(null);
 
@@ -81,27 +107,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
   const [initialPinchZoom, setInitialPinchZoom] = useState<number>(GRID_ZOOM.INITIAL_PINCH);
 
-  // Mobile detection
-  const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [showMobileMotifPanel, setShowMobileMotifPanel] = useState<boolean>(false);
-  const [showMobileControlPanel, setShowMobileControlPanel] = useState<boolean>(false);
-
-  // Mobile motif control
-  const [mobileSelectedMotif, setMobileSelectedMotif] = useState<string | null>(null);
-  const [showMotifControlModal, setShowMotifControlModal] = useState<boolean>(false);
+  // Mobile touch state
   const [isDraggingMotif, setIsDraggingMotif] = useState<boolean>(false);
   const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
   const [touchStartPos, setTouchStartPos] = useState<{x: number, y: number} | null>(null);
   const [isPinching, setIsPinching] = useState<boolean>(false);
   const [initialPinchSize, setInitialPinchSize] = useState<number>(1);
 
-  const [manualFillMode, setManualFillMode] = useState<boolean>(false);
-  const [manualFillCells, setManualFillCells] = useState<{front: Map<string, string>, back: Map<string, string>}>({
-    front: new Map<string, string>(),
-    back: new Map<string, string>()
-  });
-  const [manualToolMode, setManualToolMode] = useState<'fill' | 'clear'>(FILL_MODES.FILL);
-  const [fillColor, setFillColor] = useState<'white' | 'red' | 'green' | 'blue'>(DEFAULT_FILL_COLOR);
   const [edgePattern, setEdgePattern] = useState<'none' | 'border-1' | 'border-2' | 'corner-triangles' | 'checkerboard-edges' | 'snake-pattern' | 'stepped-border' | 'checkerboard-2row'>(DEFAULT_BORDER_PATTERN);
 
   // Improved yarn calculation based on empirical data
@@ -113,8 +125,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     const skeinsNeeded = Math.ceil(grams / YARN_CALCULATION.SKEIN_WEIGHT);
     return { grams, skeinsNeeded };
   };
-  const [gridWidth, setGridWidth] = useState<number>(project.width);
-  const [gridHeight, setGridHeight] = useState<number>(project.height);
 
   // Undo/Redo history
   const [history, setHistory] = useState<{
@@ -152,13 +162,29 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     setHistory(newHistory);
   };
 
-  // Undo function
+  // Undo function - restore entire state from history
   const undo = () => {
     if (historyIndex > 0) {
       const previousState = history[historyIndex - 1];
-      setPlacedMotifs(previousState.placedMotifs);
-      setBackSideMotifs(previousState.backSideMotifs);
-      setManualFillCells(previousState.manualFillCells);
+      // Clear current state
+      motifManager.clearAllMotifs();
+      fillManager.clearAllManualFills();
+      // Restore from history
+      previousState.placedMotifs.forEach(motif => {
+        motifManager.addMotif(motif.motifId, motif.x, motif.y, motif.name, motif.isCustom, motif.imageData);
+      });
+      previousState.backSideMotifs.forEach(motif => {
+        motifManager.addMotifBack(motif.motifId, motif.x, motif.y, motif.name, motif.isCustom, motif.imageData);
+      });
+      // Restore manual fills (note: cellKey format is row-col from gridUtils)
+      previousState.manualFillCells.front.forEach((color, cellKey) => {
+        const [row, col] = cellKey.split('-').map(Number);
+        fillManager.fillCell(row, col, 'front', color);
+      });
+      previousState.manualFillCells.back.forEach((color, cellKey) => {
+        const [row, col] = cellKey.split('-').map(Number);
+        fillManager.fillCell(row, col, 'back', color);
+      });
       setHistoryIndex(historyIndex - 1);
     }
   };
@@ -170,30 +196,22 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   // Function to update fill color and all manually filled cells
   const updateFillColor = (newColor: 'white' | 'red' | 'green' | 'blue') => {
     // Update all manually filled cells to the new color (except 'white' which means cleared)
-    setManualFillCells(prev => {
-      const newFills = {
-        front: new Map(prev.front),
-        back: new Map(prev.back)
-      };
-
-      // Update front side cells
-      prev.front.forEach((cellColor, cellKey) => {
-        if (cellColor !== 'white' && cellColor === fillColor) {
-          newFills.front.set(cellKey, newColor);
-        }
-      });
-
-      // Update back side cells
-      prev.back.forEach((cellColor, cellKey) => {
-        if (cellColor !== 'white' && cellColor === fillColor) {
-          newFills.back.set(cellKey, newColor);
-        }
-      });
-
-      return newFills;
+    // Iterate through all cells and update colors
+    manualFillCells.front.forEach((cellColor, cellKey) => {
+      if (cellColor !== 'white' && cellColor === fillColor) {
+        const [row, col] = cellKey.split('-').map(Number);
+        fillManager.fillCell(row, col, 'front', newColor);
+      }
     });
 
-    setFillColor(newColor);
+    manualFillCells.back.forEach((cellColor, cellKey) => {
+      if (cellColor !== 'white' && cellColor === fillColor) {
+        const [row, col] = cellKey.split('-').map(Number);
+        fillManager.fillCell(row, col, 'back', newColor);
+      }
+    });
+
+    fillManager.setFillColor(newColor);
   };
 
   const getColorValue = (color: string) => {
@@ -321,57 +339,67 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     // Save current state before making changes
     saveToHistory();
 
-    const cellKey = getCellKey(x, y);
-    setManualFillCells(prev => {
-      const newFills = { ...prev };
-      const currentMap = new Map(prev[side]);
+    // Convert coordinates to row/col (these use the same format)
+    const row = x;
+    const col = y;
 
-      if (manualToolMode === 'clear') {
-        // Clear mode: Set cell to white (empty) to override any fills
-        if (currentMap.get(cellKey) === 'white') {
-          // If already white, remove the override
-          currentMap.delete(cellKey);
-        } else {
-          // Set to white (empty)
-          currentMap.set(cellKey, 'white');
-        }
+    if (manualToolMode === 'clear') {
+      // Clear mode: Set cell to white (empty) to override any fills
+      const currentColor = fillManager.getCellColor(row, col, side);
+      if (currentColor === 'white') {
+        // If already white, remove the override
+        fillManager.clearCell(row, col, side);
       } else {
-        // Fill mode: Use current fill color
-        // If clicking the same cell with the same color, remove it (toggle off)
-        if (currentMap.get(cellKey) === fillColor) {
-          currentMap.delete(cellKey);
-        } else {
-          // Otherwise, set the cell to the current fill color
-          currentMap.set(cellKey, fillColor);
-        }
+        // Set to white (empty)
+        fillManager.fillCell(row, col, side, 'white');
       }
-
-      newFills[side] = currentMap;
-      return newFills;
-    });
+    } else {
+      // Fill mode: Use current fill color
+      const currentColor = fillManager.getCellColor(row, col, side);
+      if (currentColor === fillColor) {
+        // If clicking the same cell with the same color, remove it (toggle off)
+        fillManager.clearCell(row, col, side);
+      } else {
+        // Otherwise, set the cell to the current fill color
+        fillManager.fillCell(row, col, side, fillColor);
+      }
+    }
   };
 
   const clearManualFills = (side?: 'front' | 'back') => {
     if (side) {
-      setManualFillCells(prev => ({
-        ...prev,
-        [side]: new Map<string, string>()
-      }));
+      fillManager.clearManualFillsForSide(side);
     } else {
-      setManualFillCells({
-        front: new Map<string, string>(),
-        back: new Map<string, string>()
-      });
+      fillManager.clearAllManualFills();
     }
   };
 
   // Helper functions for current side
   const getCurrentMotifs = () => currentSide === 'front' ? placedMotifs : backSideMotifs;
+
   const setCurrentMotifs = (motifs: PlacedMotif[] | ((prev: PlacedMotif[]) => PlacedMotif[])) => {
+    // Get the new motif array (handle function updates)
+    const newMotifs = typeof motifs === 'function' ? motifs(getCurrentMotifs()) : motifs;
+
     if (currentSide === 'front') {
-      setPlacedMotifs(motifs);
+      // Update front motifs using hook - clear and re-add (inefficient but functional)
+      motifManager.clearAllMotifs();
+      newMotifs.forEach(m => {
+        motifManager.addMotif(m.motifId, m.x, m.y, m.name, m.isCustom, m.imageData);
+      });
+      // Re-add back motifs
+      backSideMotifs.forEach(m => {
+        motifManager.addMotifBack(m.motifId, m.x, m.y, m.name, m.isCustom, m.imageData);
+      });
     } else {
-      setBackSideMotifs(motifs);
+      // Update back motifs using hook
+      motifManager.clearAllMotifs();
+      placedMotifs.forEach(m => {
+        motifManager.addMotif(m.motifId, m.x, m.y, m.name, m.isCustom, m.imageData);
+      });
+      newMotifs.forEach(m => {
+        motifManager.addMotifBack(m.motifId, m.x, m.y, m.name, m.isCustom, m.imageData);
+      });
     }
   };
   const getCurrentPattern = () => currentSide === 'front' ? generatedPattern : backSidePattern;
@@ -446,7 +474,9 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
         // Filter out null values (failed loads)
         const validMotifs = loadedMotifs.filter((m): m is {id: string, name: string, imageData: string, category: string} => m !== null);
-        setCustomMotifs(validMotifs);
+        validMotifs.forEach(m => {
+          motifManager.addCustomMotif(m.name, m.imageData, m.category);
+        });
 
         if (validMotifs.length > 0) {
           console.log(`Loaded ${validMotifs.length} motifs from library`);
@@ -468,15 +498,15 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       const originalSide = currentSide;
 
       // Generate pattern for front side
-      setCurrentSide('front');
+      gridManager.setCurrentSide('front');
       await handleGeneratePattern();
 
       // Generate pattern for back side
-      setCurrentSide('back');
+      gridManager.setCurrentSide('back');
       await handleGeneratePattern();
 
       // Return to original side
-      setCurrentSide(originalSide);
+      gridManager.setCurrentSide(originalSide);
       setAutoUpdating(false);
     };
 
@@ -500,19 +530,8 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     };
   }, [placedMotifs, backSideMotifs, currentSide, stitchInterpretation, gridWidth, gridHeight, manualFillCells]);
 
-  // Mobile detection with resize listener
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    // Check on mount
-    checkMobile();
-
-    // Add resize listener
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  // Mobile detection is handled automatically by the useMobileDetection hook
+  // No need for additional detection code here
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -551,12 +570,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     };
 
     setCurrentMotifs(prev => [...prev, newMotif]);
-    setSelectedMotifType(null);
+    motifManager.setSelectedMotifType(null);
 
     // On mobile, auto-open control modal for the newly placed motif
     if (isMobile) {
-      setMobileSelectedMotif(newMotif.id);
-      setShowMotifControlModal(true);
+      mobileDetector.setMobileSelectedMotif(newMotif.id);
+      mobileDetector.setShowMotifControlModal(true);
     }
   };
 
@@ -608,7 +627,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
         };
 
         setCurrentMotifs(prev => [...prev, newMotif]);
-        setSelectedMotifType(null);
+        motifManager.setSelectedMotifType(null);
       }
     }
   };
@@ -640,7 +659,8 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setGridZoom(prev => Math.max(0.5, Math.min(3.0, prev + delta)));
+      const newZoom = Math.max(0.5, Math.min(3.0, gridZoom + delta));
+      gridManager.setGridZoom(newZoom);
     }
   };
 
@@ -699,7 +719,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       );
       const scale = distance / initialPinchDistance;
       const newZoom = initialPinchZoom * scale;
-      setGridZoom(Math.max(0.5, Math.min(3.0, newZoom)));
+      gridManager.setGridZoom(Math.max(0.5, Math.min(3.0, newZoom)));
     }
     // Handle single touch for motif dragging
     else if (e.touches.length === 1 && gridDragging) {
@@ -742,7 +762,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       // Check if it's an image file
       if (file.type.startsWith('image/')) {
         // Make this side active
-        setCurrentSide(side);
+        gridManager.setCurrentSide(side);
 
         // Get drop position relative to grid (default to center if can't calculate)
         let x = 50; // Default to center
@@ -770,7 +790,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           };
 
           // Add to custom motifs
-          setCustomMotifs(prev => [...prev, newCustomMotif]);
+          motifManager.addCustomMotif(newCustomMotif.name, newCustomMotif.imageData, 'uploaded');
 
           // Create and place motif at drop position
           const newMotif: PlacedMotif = {
@@ -787,11 +807,11 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             imageData
           };
 
-          // Add to the correct side
+          // Add to the correct side using hook
           if (side === 'front') {
-            setPlacedMotifs(prev => [...prev, newMotif]);
+            motifManager.addMotif(newMotif.motifId, newMotif.x, newMotif.y, newMotif.name, newMotif.isCustom, newMotif.imageData);
           } else {
-            setBackSideMotifs(prev => [...prev, newMotif]);
+            motifManager.addMotifBack(newMotif.motifId, newMotif.x, newMotif.y, newMotif.name, newMotif.isCustom, newMotif.imageData);
           }
         };
 
@@ -915,14 +935,14 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 onClick={() => {
                   // Make this side active when clicked
                   if (currentSide !== side) {
-                    setCurrentSide(side);
+                    gridManager.setCurrentSide(side);
                   }
 
                   if (motifsAtPosition.length > 0 && !manualFillMode) {
                     if (isMobile) {
                       // On mobile, open control modal
-                      setMobileSelectedMotif(motifsAtPosition[0].id);
-                      setShowMotifControlModal(true);
+                      mobileDetector.setMobileSelectedMotif(motifsAtPosition[0].id);
+                      mobileDetector.setShowMotifControlModal(true);
                     } else {
                       // On desktop, use the sidebar selection
                       handleMotifSelect(motifsAtPosition[0].id);
@@ -934,7 +954,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 onMouseDown={(e) => {
                   // Make this side active when interacting
                   if (currentSide !== side) {
-                    setCurrentSide(side);
+                    gridManager.setCurrentSide(side);
                   }
 
                   if (motifsAtPosition.length > 0) {
@@ -1036,12 +1056,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
     setCurrentMotifs(prev => prev.filter(motif => motif.id !== motifId));
     if (selectedMotifId === motifId) {
-      setSelectedMotifId(null);
+      motifManager.setSelectedMotifId(null);
     }
   };
 
   const handleMotifSelect = (motifId: string) => {
-    setSelectedMotifId(selectedMotifId === motifId ? null : motifId);
+    motifManager.setSelectedMotifId(selectedMotifId === motifId ? null : motifId);
   };
 
   // Mobile motif touch handlers
@@ -1163,8 +1183,8 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
     // If this was just a tap (not drag/pinch), select motif and show control
     if (!isDraggingMotif && !isPinching) {
-      setMobileSelectedMotif(motifId);
-      setShowMotifControlModal(true);
+      mobileDetector.setMobileSelectedMotif(motifId);
+      mobileDetector.setShowMotifControlModal(true);
     }
   };
 
@@ -1178,16 +1198,19 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       id: `${motif.motifId}-back-${Date.now()}-${Math.random()}`
     }));
 
-    setBackSideMotifs(copiedMotifs);
+    // Add copied motifs to back side using hook
+    copiedMotifs.forEach(motif => {
+      motifManager.addMotifBack(motif.motifId, motif.x, motif.y, motif.name, motif.isCustom, motif.imageData);
+    });
 
     // Copy manual fills from front to back
-    setManualFillCells(prev => ({
-      ...prev,
-      back: new Map(prev.front)
-    }));
+    manualFillCells.front.forEach((color, cellKey) => {
+      const [row, col] = cellKey.split('-').map(Number);
+      fillManager.fillCell(row, col, 'back', color);
+    });
 
     // Switch to back side to show the copied design
-    setCurrentSide('back');
+    gridManager.setCurrentSide('back');
 
     // Auto-regenerate pattern
     if (!manualFillMode) {
@@ -1198,16 +1221,11 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   };
 
   const handleClearAll = () => {
-    // Clear all motifs from both sides
-    setPlacedMotifs([]);
-    setBackSideMotifs([]);
-    setSelectedMotifId(null);
+    // Clear all motifs from both sides using hooks
+    motifManager.clearAllMotifs();
 
-    // Clear manual fills from both sides
-    setManualFillCells({
-      front: new Map(),
-      back: new Map()
-    });
+    // Clear manual fills from both sides using hooks
+    fillManager.clearAllManualFills();
 
     // Reset edge pattern to default
     setEdgePattern('border-1');
@@ -1550,7 +1568,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       };
 
       // Append to existing motifs (including library motifs)
-      setCustomMotifs(prev => [...prev, newCustomMotif]);
+      motifManager.addCustomMotif(newCustomMotif.name, newCustomMotif.imageData, newCustomMotif.category);
     };
 
     reader.readAsDataURL(file);
@@ -1624,7 +1642,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       category: 'text'
     };
 
-    setCustomMotifs(prev => [...prev, newTextMotif]);
+    motifManager.addCustomMotif(newTextMotif.name, newTextMotif.imageData, newTextMotif.category);
     setTextInput('');
     setShowTextInput(false);
   };
@@ -1823,8 +1841,8 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   if (!isNaN(widthCm) && !isNaN(heightCm) && widthCm >= 8 && widthCm <= 200 && heightCm >= 7.2 && heightCm <= 180) {
                     const newWidth = Math.round(widthCm / 1.0);
                     const newHeight = Math.round(heightCm / 0.9);
-                    setGridWidth(newWidth);
-                    setGridHeight(newHeight);
+                    gridManager.setGridWidth(newWidth);
+                    gridManager.setGridHeight(newHeight);
                   } else {
                     alert(t('workspace.resizeError'));
                   }
@@ -1894,13 +1912,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           <div className="mobile-side-toggle">
             <button
               className={`btn-mobile-toggle ${currentSide === 'front' ? 'active' : ''}`}
-              onClick={() => setCurrentSide('front')}
+              onClick={() => gridManager.setCurrentSide('front')}
             >
               {t('grid.front')}
             </button>
             <button
               className={`btn-mobile-toggle ${currentSide === 'back' ? 'active' : ''}`}
-              onClick={() => setCurrentSide('back')}
+              onClick={() => gridManager.setCurrentSide('back')}
             >
               {t('grid.back')}
             </button>
@@ -1941,7 +1959,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   const categories = ['all', 'flowers', 'sea', 'birds', 'sport', 'other'];
                   const currentIndex = categories.indexOf(selectedCategory);
                   const nextIndex = (currentIndex + 1) % categories.length;
-                  setSelectedCategory(categories[nextIndex]);
+                  motifManager.setSelectedCategory(categories[nextIndex]);
                 }}
               >
                 {selectedCategory === 'flowers' ? t('motifs.categories.flowers') :
@@ -2147,8 +2165,8 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       className="compact-btn"
                       onClick={() => {
                         handleMotifDuplicate(motif.id);
-                        setShowMotifControlModal(false);
-                        setMobileSelectedMotif(null);
+                        mobileDetector.setShowMotifControlModal(false);
+                        mobileDetector.setMobileSelectedMotif(null);
                       }}
                     >
                       {t('motifs.duplicate')}
@@ -2157,8 +2175,8 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       className="compact-btn danger"
                       onClick={() => {
                         handleMotifRemove(motif.id);
-                        setShowMotifControlModal(false);
-                        setMobileSelectedMotif(null);
+                        mobileDetector.setShowMotifControlModal(false);
+                        mobileDetector.setMobileSelectedMotif(null);
                       }}
                     >
                       {t('motifs.remove')}
@@ -2166,8 +2184,8 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     <button
                       className="compact-btn close"
                       onClick={() => {
-                        setShowMotifControlModal(false);
-                        setMobileSelectedMotif(null);
+                        mobileDetector.setShowMotifControlModal(false);
+                        mobileDetector.setMobileSelectedMotif(null);
                       }}
                     >
                       ×
@@ -2194,7 +2212,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 <select
                   id="category-select"
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => motifManager.setSelectedCategory(e.target.value)}
                   className="category-dropdown"
                 >
                   <option value="all">{t('motifs.categories.all')}</option>
@@ -2326,7 +2344,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
             <div className="manual-fill-controls">
               <button
                 className={`btn ${manualFillMode ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => setManualFillMode(!manualFillMode)}
+                onClick={() => fillManager.setManualFillMode(!manualFillMode)}
                 title={manualFillMode ? t('grid.endFillMode') : t('grid.startFillMode')}
               >
                 {manualFillMode ? t('grid.endFillMode') : t('grid.startFillMode')}
@@ -2337,14 +2355,14 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                   <div className="tool-mode-selector">
                     <button
                       className={`btn btn-small ${manualToolMode === 'fill' ? 'btn-primary' : 'btn-outline'}`}
-                      onClick={() => setManualToolMode('fill')}
+                      onClick={() => fillManager.setManualToolMode('fill')}
                       title={t('grid.fillEmpty')}
                     >
                       {t('grid.fill')}
                     </button>
                     <button
                       className={`btn btn-small ${manualToolMode === 'clear' ? 'btn-primary' : 'btn-outline'}`}
-                      onClick={() => setManualToolMode('clear')}
+                      onClick={() => fillManager.setManualToolMode('clear')}
                       title={t('grid.emptyFilled')}
                     >
                       {t('grid.empty')}
@@ -2410,8 +2428,8 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                           if (!isNaN(widthCm) && !isNaN(heightCm) && widthCm >= 8 && widthCm <= 200 && heightCm >= 7.2 && heightCm <= 180) {
                             const newWidth = Math.round(widthCm / 1.0);
                             const newHeight = Math.round(heightCm / 0.9);
-                            setGridWidth(newWidth);
-                            setGridHeight(newHeight);
+                            gridManager.setGridWidth(newWidth);
+                            gridManager.setGridHeight(newHeight);
                           } else {
                             alert(t('workspace.resizeError'));
                           }
@@ -2490,7 +2508,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                     <div className="zoom-slider-container">
                       <button
                         className="btn btn-small btn-secondary"
-                        onClick={() => setGridZoom(prev => Math.max(0.5, prev - 0.1))}
+                        onClick={() => gridManager.setGridZoom(Math.max(0.5, gridZoom - 0.1))}
                         disabled={gridZoom <= 0.5}
                         title="Zoom ut"
                       >
@@ -2502,13 +2520,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                         max="3.0"
                         step="0.1"
                         value={gridZoom}
-                        onChange={(e) => setGridZoom(parseFloat(e.target.value))}
+                        onChange={(e) => gridManager.setGridZoom(parseFloat(e.target.value))}
                         className="zoom-slider"
                         title={`Zoom: ${(gridZoom * 100).toFixed(0)}%`}
                       />
                       <button
                         className="btn btn-small btn-secondary"
-                        onClick={() => setGridZoom(prev => Math.min(3.0, prev + 0.1))}
+                        onClick={() => gridManager.setGridZoom(Math.min(3.0, gridZoom + 0.1))}
                         disabled={gridZoom >= 3.0}
                         title="Zoom inn"
                       >
@@ -2526,7 +2544,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       <h4>{t('grid.front')}</h4>
                       <button
                         className="btn btn-small btn-activate"
-                        onClick={() => setCurrentSide('front')}
+                        onClick={() => gridManager.setCurrentSide('front')}
                       >
                         {t('grid.activate')}
                       </button>
@@ -2560,7 +2578,7 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                       <h4>{t('grid.back')}</h4>
                       <button
                         className="btn btn-small btn-activate"
-                        onClick={() => setCurrentSide('back')}
+                        onClick={() => gridManager.setCurrentSide('back')}
                       >
                         {t('grid.activate')}
                       </button>
