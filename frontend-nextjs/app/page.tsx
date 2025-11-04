@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DesignWorkspace } from '@/components/DesignWorkspace'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { LandingPage } from '@/components/landing'
 
 interface Project {
   name: string
@@ -37,19 +37,6 @@ export default function Home() {
   }
 
   return (
-    <div className="landing-page">
-      <div className="landing-content">
-        <div style={{ position: 'absolute', top: 20, right: 20 }}>
-          <LanguageSwitcher />
-        </div>
-        <h1 className="landing-title">{t('home.title')}</h1>
-        <p className="landing-subtitle">
-          {t('home.subtitle')}
-        </p>
-        <button className="btn-landing" data-testid="new-project" onClick={handleStartDesign}>
-          {t('home.startButton')}
-        </button>
-      </div>
-    </div>
+    <LandingPage onStartDesign={handleStartDesign} />
   )
 }

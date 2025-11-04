@@ -4,9 +4,42 @@
     "description": "Design din egen hekleveske - fargelegg, plasser motiver og skap din personlige oppskrift"
   },
   "home": {
-    "title": "Heklet",
-    "subtitle": "Design din egen hekleveske - fargelegg, plasser motiver og skap din personlige oppskrift",
+    "title": "Hekledesignverktøy",
+    "subtitle": "Design dine egne hekleprosjekter og eksporter mønstrene",
     "startButton": "Start designet ditt"
+  },
+  "features": {
+    "title": "Funksjoner",
+    "product": {
+      "title": "Velg ditt produkt",
+      "subtitle": "Kommer snart: Flere produktkategorier",
+      "comingSoon": "Flere produktkategorier"
+    },
+    "size": {
+      "title": "Juster størrelsen",
+      "subtitle": "Kommer snart: Plaggstørrelser som kan justeres til å passe perfekt",
+      "comingSoon": "Plaggstørrelser som kan justeres til å passe perfekt"
+    },
+    "yarn": {
+      "title": "Velg ditt garn og farge",
+      "subtitle": "Kommer snart: Velg fra et bredt utvalg av garner",
+      "comingSoon": "Velg fra et bredt utvalg av garner"
+    },
+    "edge": {
+      "title": "Velg et kantmønster",
+      "subtitle": "Kommer snart: Mønster for å fylle hele overflaten",
+      "comingSoon": "Mønster for å fylle hele overflaten"
+    },
+    "motif": {
+      "title": "Plasser tekst eller motiver fra vårt bibliotek, eller last opp dine egne",
+      "subtitle": "Kommer snart: Flere og forbedrede motiver",
+      "comingSoon": "Flere og forbedrede motiver"
+    },
+    "fill": {
+      "title": "Om nødvendig: Juster motiver ved hjelp av manuelt fyleverktøy",
+      "subtitle": "Kommer snart: Forbedret fyleverktøy som følger motivet",
+      "comingSoon": "Forbedret fyleverktøy som følger motivet"
+    }
   },
   "project": {
     "new": "Nytt prosjekt",

@@ -1,0 +1,429 @@
+/* ============================================================================
+   Landing Page Styles - Public Sans Font & Brown Theme
+   ============================================================================ */
+
+/* Import Public Sans font */
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap');
+
+/* Color Variables */
+:root {
+  --brown-primary: #6D4C41;
+  --brown-dark: #5C4033;
+  --brown-light: #8D6E63;
+  --text-dark: #2C2C2C;
+  --text-light: #666666;
+  --bg-light: #F9F8F7;
+  --bg-white: #FFFFFF;
+  --border-light: #E8E8E8;
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================================================
+   GENERAL STYLES
+   ============================================================================ */
+
+* {
+  font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.landing-page-wrapper {
+  min-height: 100vh;
+  background-color: var(--bg-white);
+}
+
+.landing-main {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================================
+   NAVIGATION HEADER
+   ============================================================================ */
+
+.landing-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--bg-white);
+  border-bottom: 1px solid var(--border-light);
+  padding: 16px 24px;
+}
+
+.landing-header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.hamburger-menu {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: 8px;
+  line-height: 1;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+}
+
+.hamburger-menu:hover {
+  background-color: var(--bg-light);
+  color: var(--brown-primary);
+}
+
+.hamburger-menu:active {
+  background-color: var(--border-light);
+}
+
+.language-switcher-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+/* ============================================================================
+   HERO SECTION
+   ============================================================================ */
+
+.hero-section {
+  padding: 60px 24px;
+  background-color: var(--bg-white);
+}
+
+.hero-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: flex-end;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 550px;
+}
+
+.hero-title {
+  font-size: 95px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-dark);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.hero-description {
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-light);
+  margin: 0;
+}
+
+.hero-button {
+  align-self: flex-start;
+  padding: 14px 32px;
+  background-color: var(--brown-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 21px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+}
+
+.hero-button:hover {
+  background-color: var(--brown-dark);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.hero-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-subtle);
+}
+
+.hero-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: 780px;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  box-shadow: var(--shadow-medium);
+}
+
+/* ============================================================================
+   FEATURES SECTION
+   ============================================================================ */
+
+.features-section {
+  padding: 80px 24px;
+  background-color: var(--bg-white);
+}
+
+.features-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.features-title {
+  font-size: 62px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-dark);
+  margin: 0 0 60px 0;
+  text-align: center;
+  font-style: italic;
+  letter-spacing: -0.5px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+/* ============================================================================
+   FEATURE CARD
+   ============================================================================ */
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 24px;
+  background-color: var(--bg-light);
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  box-shadow: var(--shadow-subtle);
+  transform: translateY(-2px);
+}
+
+.feature-card-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.feature-card-subtitle {
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--text-light);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.feature-card-coming-soon {
+  margin-top: 8px;
+}
+
+.coming-soon-label {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.coming-soon-text {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text-light);
+  margin: 4px 0 0 0;
+  line-height: 1.5;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+/* Tablet: 768px - 1023px */
+@media (max-width: 1023px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 0 20px;
+  }
+
+  .hero-title {
+    font-size: 74px;
+  }
+
+  .hero-image-wrapper {
+    height: 585px;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+
+  .features-title {
+    font-size: 52px;
+    margin-bottom: 50px;
+  }
+
+  .hero-section {
+    padding: 40px 24px;
+  }
+
+  .features-section {
+    padding: 60px 24px;
+  }
+}
+
+/* Mobile: < 768px */
+@media (max-width: 767px) {
+  .landing-header {
+    padding: 12px 16px;
+  }
+
+  .landing-header-container {
+    gap: 12px;
+  }
+
+  .hero-section {
+    padding: 30px 16px;
+  }
+
+  .hero-container {
+    gap: 30px;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-content {
+    gap: 16px;
+  }
+
+  .hero-title {
+    font-size: 55px;
+  }
+
+  .hero-description {
+    font-size: 21px;
+  }
+
+  .hero-button {
+    padding: 12px 24px;
+    font-size: 20px;
+  }
+
+  .hero-image-wrapper {
+    height: 494px;
+  }
+
+  .features-section {
+    padding: 40px 16px;
+  }
+
+  .features-title {
+    font-size: 42px;
+    margin-bottom: 40px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .feature-card {
+    padding: 24px 16px;
+    gap: 12px;
+  }
+
+  .feature-card-title {
+    font-size: 23px;
+  }
+
+  .feature-card-subtitle {
+    font-size: 20px;
+  }
+
+  .coming-soon-label {
+    font-size: 16px;
+  }
+
+  .coming-soon-text {
+    font-size: 17px;
+  }
+}
+
+/* Small mobile: < 480px */
+@media (max-width: 479px) {
+  .hero-title {
+    font-size: 47px;
+  }
+
+  .hero-description {
+    font-size: 20px;
+  }
+
+  .features-title {
+    font-size: 36px;
+  }
+
+  .feature-card {
+    padding: 20px 12px;
+  }
+
+  .feature-card-title {
+    font-size: 21px;
+  }
+
+  .feature-card-subtitle {
+    font-size: 18px;
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Accessibility - Focus visible */
+.hero-button:focus-visible,
+.hamburger-menu:focus-visible {
+  outline: 2px solid var(--brown-primary);
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .landing-header {
+    position: static;
+  }
+
+  .features-section {
+    page-break-before: always;
+  }
+}

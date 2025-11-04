@@ -4,9 +4,42 @@
     "description": "Design your own crochet bag - color, place motifs and create your personal recipe"
   },
   "home": {
-    "title": "Heklet",
-    "subtitle": "Design your own crochet bag - color, place motifs and create your personal recipe",
+    "title": "Crochet design tool",
+    "subtitle": "Design your own crochet projects and export the patterns",
     "startButton": "Start your design"
+  },
+  "features": {
+    "title": "Features",
+    "product": {
+      "title": "Choose your product",
+      "subtitle": "Coming soon: More product categories",
+      "comingSoon": "More product categories"
+    },
+    "size": {
+      "title": "Adjust the size",
+      "subtitle": "Coming soon: Garment sizes that can be adjusted to fit perfectly",
+      "comingSoon": "Garment sizes that can be adjusted to fit perfectly"
+    },
+    "yarn": {
+      "title": "Choose your yarn and color",
+      "subtitle": "Coming soon: Choose from a variety of yarns",
+      "comingSoon": "Choose from a variety of yarns"
+    },
+    "edge": {
+      "title": "Choose an edge pattern",
+      "subtitle": "Coming soon: Patterns to fill the whole surface",
+      "comingSoon": "Patterns to fill the whole surface"
+    },
+    "motif": {
+      "title": "Place text or motifs from our library, or upload your own",
+      "subtitle": "Coming soon: More and improved motifs",
+      "comingSoon": "More and improved motifs"
+    },
+    "fill": {
+      "title": "If needed: Adjust motifs using the manual fill tool",
+      "subtitle": "Coming soon: Improved manual fill tool that follows the motif",
+      "comingSoon": "Improved manual fill tool that follows the motif"
+    }
   },
   "project": {
     "new": "New project",
