@@ -376,32 +376,6 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
   // Helper functions for current side
   const getCurrentMotifs = () => currentSide === 'front' ? placedMotifs : backSideMotifs;
-
-  const setCurrentMotifs = (motifs: PlacedMotif[] | ((prev: PlacedMotif[]) => PlacedMotif[])) => {
-    // Get the new motif array (handle function updates)
-    const newMotifs = typeof motifs === 'function' ? motifs(getCurrentMotifs()) : motifs;
-
-    if (currentSide === 'front') {
-      // Update front motifs using hook - clear and re-add (inefficient but functional)
-      motifManager.clearAllMotifs();
-      newMotifs.forEach(m => {
-        motifManager.addMotif(m.motifId, m.x, m.y, m.name, m.isCustom, m.imageData);
-      });
-      // Re-add back motifs
-      backSideMotifs.forEach(m => {
-        motifManager.addMotifBack(m.motifId, m.x, m.y, m.name, m.isCustom, m.imageData);
-      });
-    } else {
-      // Update back motifs using hook
-      motifManager.clearAllMotifs();
-      placedMotifs.forEach(m => {
-        motifManager.addMotif(m.motifId, m.x, m.y, m.name, m.isCustom, m.imageData);
-      });
-      newMotifs.forEach(m => {
-        motifManager.addMotifBack(m.motifId, m.x, m.y, m.name, m.isCustom, m.imageData);
-      });
-    }
-  };
   const getCurrentPattern = () => currentSide === 'front' ? generatedPattern : backSidePattern;
   const setCurrentPattern = (pattern: any) => {
     if (currentSide === 'front') {
@@ -569,7 +543,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       imageData: customMotif?.imageData
     };
 
-    setCurrentMotifs(prev => [...prev, newMotif]);
+    // Add motif using the correct hook method based on current side
+    if (currentSide === 'front') {
+      motifManager.addMotif(newMotif.motifId, newMotif.x, newMotif.y, newMotif.name, newMotif.isCustom, newMotif.imageData);
+    } else {
+      motifManager.addMotifBack(newMotif.motifId, newMotif.x, newMotif.y, newMotif.name, newMotif.isCustom, newMotif.imageData);
+    }
     motifManager.setSelectedMotifType(null);
 
     // On mobile, auto-open control modal for the newly placed motif
@@ -626,7 +605,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           imageData: customMotif.imageData
         };
 
-        setCurrentMotifs(prev => [...prev, newMotif]);
+        // Add motif using the correct hook method based on current side
+        if (currentSide === 'front') {
+          motifManager.addMotif(newMotif.motifId, newMotif.x, newMotif.y, newMotif.name, newMotif.isCustom, newMotif.imageData);
+        } else {
+          motifManager.addMotifBack(newMotif.motifId, newMotif.x, newMotif.y, newMotif.name, newMotif.isCustom, newMotif.imageData);
+        }
         motifManager.setSelectedMotifType(null);
       }
     }
@@ -644,9 +628,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
       const x = (gridX / gridWidth) * 100;
       const y = (gridY / gridHeight) * 100;
 
-      setCurrentMotifs(prev => prev.map(motif =>
-        motif.id === gridDragging ? { ...motif, x, y } : motif
-      ));
+      // Use the correct hook method based on current side
+      if (currentSide === 'front') {
+        motifManager.moveMotifFront(gridDragging, x, y);
+      } else {
+        motifManager.moveMotifBack(gridDragging, x, y);
+      }
     }
   };
 
@@ -979,9 +966,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   const handleMotifResize = (motifId: string, newSize: number) => {
     const maxSize = getMaxMotifSize();
     const clampedSize = Math.max(0.1, Math.min(maxSize, newSize));
-    setCurrentMotifs(prev => prev.map(motif =>
-      motif.id === motifId ? { ...motif, size: clampedSize } : motif
-    ));
+
+    // Use the correct hook method based on current side
+    if (currentSide === 'front') {
+      motifManager.updateMotifSizeFront(motifId, clampedSize);
+    } else {
+      motifManager.updateMotifSizeBack(motifId, clampedSize);
+    }
 
     // Auto-regenerate pattern after resize if not in manual mode
     if (!manualFillMode && getCurrentMotifs().length > 0) {
@@ -993,9 +984,13 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
 
   const handleMotifThreshold = (motifId: string, newThreshold: number) => {
     const clampedThreshold = Math.max(0, Math.min(255, newThreshold));
-    setCurrentMotifs(prev => prev.map(motif =>
-      motif.id === motifId ? { ...motif, threshold: clampedThreshold } : motif
-    ));
+
+    // Use the correct hook method based on current side
+    if (currentSide === 'front') {
+      motifManager.updateMotifThresholdFront(motifId, clampedThreshold);
+    } else {
+      motifManager.updateMotifThresholdBack(motifId, clampedThreshold);
+    }
 
     // Auto-regenerate pattern after threshold change
     if (!manualFillMode && getCurrentMotifs().length > 0) {
@@ -1006,16 +1001,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   };
 
   const handleMotifFlip = (motifId: string, direction: 'horizontal' | 'vertical') => {
-    setCurrentMotifs(prev => prev.map(motif => {
-      if (motif.id === motifId) {
-        if (direction === 'horizontal') {
-          return { ...motif, flipHorizontal: !motif.flipHorizontal };
-        } else {
-          return { ...motif, flipVertical: !motif.flipVertical };
-        }
-      }
-      return motif;
-    }));
+    // Use the correct hook method based on current side
+    if (currentSide === 'front') {
+      motifManager.toggleMotifFlipFront(motifId, direction);
+    } else {
+      motifManager.toggleMotifFlipBack(motifId, direction);
+    }
 
     // Auto-regenerate pattern after flip
     if (!manualFillMode && getCurrentMotifs().length > 0) {
@@ -1026,21 +1017,17 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
   };
 
   const handleMotifDuplicate = (motifId: string) => {
-    const motifToDuplicate = getCurrentMotifs().find(m => m.id === motifId);
-    if (!motifToDuplicate) return;
-
     // Save current state before making changes
     saveToHistory();
 
-    // Create a duplicate with a new ID and slightly offset position
-    const duplicatedMotif: PlacedMotif = {
-      ...motifToDuplicate,
-      id: `${motifToDuplicate.motifId}-${currentSide}-${Date.now()}`,
-      x: Math.min(90, motifToDuplicate.x + 5), // Offset by 5% to the right
-      y: Math.min(90, motifToDuplicate.y + 5)  // Offset by 5% down
-    };
-
-    setCurrentMotifs(prev => [...prev, duplicatedMotif]);
+    // Use the correct hook method based on current side
+    const offsetX = 5;  // 5% to the right
+    const offsetY = 5;  // 5% down
+    if (currentSide === 'front') {
+      motifManager.duplicateMotifFront(motifId, offsetX, offsetY);
+    } else {
+      motifManager.duplicateMotifBack(motifId, offsetX, offsetY);
+    }
 
     // Auto-regenerate pattern
     if (!manualFillMode) {
@@ -1054,7 +1041,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
     // Save current state before making changes
     saveToHistory();
 
-    setCurrentMotifs(prev => prev.filter(motif => motif.id !== motifId));
+    // Use the correct hook method based on current side
+    if (currentSide === 'front') {
+      motifManager.removeMotifFront(motifId);
+    } else {
+      motifManager.removeMotifBack(motifId);
+    }
     if (selectedMotifId === motifId) {
       motifManager.setSelectedMotifId(null);
     }
@@ -1145,9 +1137,12 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
           const newX = Math.max(-50, Math.min(150, motif.x + deltaXPercent));
           const newY = Math.max(-50, Math.min(150, motif.y + deltaYPercent));
 
-          setCurrentMotifs(prev => prev.map(m =>
-            m.id === motifId ? { ...m, x: newX, y: newY } : m
-          ));
+          // Use the correct hook method based on current side
+          if (currentSide === 'front') {
+            motifManager.moveMotifFront(motifId, newX, newY);
+          } else {
+            motifManager.moveMotifBack(motifId, newX, newY);
+          }
 
           setTouchStartPos({ x: touch.clientX, y: touch.clientY });
         }
@@ -2093,27 +2088,39 @@ export const DesignWorkspace: React.FC<DesignWorkspaceProps> = ({ project, onBac
                 <div className="mobile-position-controls">
                   <div className="position-grid">
                     <button className="pos-btn" onClick={() => {
-                      setCurrentMotifs(prev => prev.map(m =>
-                        m.id === motif.id ? { ...m, y: Math.max(-50, m.y - 5) } : m
-                      ));
+                      const newY = Math.max(-50, motif.y - 5);
+                      if (currentSide === 'front') {
+                        motifManager.moveMotifFront(motif.id, motif.x, newY);
+                      } else {
+                        motifManager.moveMotifBack(motif.id, motif.x, newY);
+                      }
                       setTimeout(() => handleGeneratePattern(), 100);
                     }}>↑</button>
                     <button className="pos-btn" onClick={() => {
-                      setCurrentMotifs(prev => prev.map(m =>
-                        m.id === motif.id ? { ...m, x: Math.max(-50, m.x - 5) } : m
-                      ));
+                      const newX = Math.max(-50, motif.x - 5);
+                      if (currentSide === 'front') {
+                        motifManager.moveMotifFront(motif.id, newX, motif.y);
+                      } else {
+                        motifManager.moveMotifBack(motif.id, newX, motif.y);
+                      }
                       setTimeout(() => handleGeneratePattern(), 100);
                     }}>←</button>
                     <button className="pos-btn" onClick={() => {
-                      setCurrentMotifs(prev => prev.map(m =>
-                        m.id === motif.id ? { ...m, x: Math.min(150, m.x + 5) } : m
-                      ));
+                      const newX = Math.min(150, motif.x + 5);
+                      if (currentSide === 'front') {
+                        motifManager.moveMotifFront(motif.id, newX, motif.y);
+                      } else {
+                        motifManager.moveMotifBack(motif.id, newX, motif.y);
+                      }
                       setTimeout(() => handleGeneratePattern(), 100);
                     }}>→</button>
                     <button className="pos-btn" onClick={() => {
-                      setCurrentMotifs(prev => prev.map(m =>
-                        m.id === motif.id ? { ...m, y: Math.min(150, m.y + 5) } : m
-                      ));
+                      const newY = Math.min(150, motif.y + 5);
+                      if (currentSide === 'front') {
+                        motifManager.moveMotifFront(motif.id, motif.x, newY);
+                      } else {
+                        motifManager.moveMotifBack(motif.id, motif.x, newY);
+                      }
                       setTimeout(() => handleGeneratePattern(), 100);
                     }}>↓</button>
                   </div>
